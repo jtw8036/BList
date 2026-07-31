@@ -1,0 +1,6 @@
+{
+  "name": "우리의 버킷리스트 & 메모 - 커플 공유 공간",
+  "description": "여자친구와 둘이서 함께 채워나가는 버킷리스트, 기념일 D-Day, 비밀 메모 공유 웹앱",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
