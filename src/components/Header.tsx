@@ -39,7 +39,7 @@ export const Header: React.FC<HeaderProps> = ({ profile, onOpenProfileTab }) => 
               />
             ) : (
               <img
-                src="/icon.svg"
+                src="./icon.svg"
                 alt="앱 아이콘"
                 className="w-full h-full object-cover p-1"
               />
