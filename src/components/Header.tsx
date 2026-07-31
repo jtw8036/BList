@@ -48,14 +48,9 @@ export const Header: React.FC<HeaderProps> = ({ profile, onOpenProfileTab }) => 
           <div>
             <div className="flex items-center gap-2">
               <h1 className="font-bold text-slate-900 text-base leading-snug">
-                T♡S
+                태웅&서주
               </h1>
             </div>
-            {(profile.partner1Name || profile.partner2Name) && (
-              <p className="text-[11px] text-slate-500 font-medium">
-                {profile.partner1Name} ❤️ {profile.partner2Name}
-              </p>
-            )}
           </div>
         </div>
 

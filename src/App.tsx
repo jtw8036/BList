@@ -55,12 +55,17 @@ export default function App() {
     fetchCoupleData(coupleCode);
     localStorage.setItem('couple_code', coupleCode);
 
-    // Auto-polling for real-time couple sync every 4 seconds
-    const interval = setInterval(() => {
+    const handleFocus = () => {
       fetchCoupleData(coupleCode);
-    }, 4000);
+    };
 
-    return () => clearInterval(interval);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleFocus);
+    };
   }, [coupleCode]);
 
   // Profile update handler
