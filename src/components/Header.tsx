@@ -55,10 +55,13 @@ export const Header: React.FC<HeaderProps> = ({ profile, onOpenProfileTab }) => 
           </div>
         </div>
 
-        {/* D-Day badge or clean header right */}
+        {/* D-Day badge with brand gradient border */}
         {dDay !== null && (
-          <div className="bg-slate-100 border border-slate-200/80 px-2.5 py-1 rounded-xl text-slate-700 font-mono font-bold text-xs">
-            {dDay > 0 ? `D+${dDay}` : dDay === 0 ? 'D-Day' : `D${dDay}`}
+          <div className="p-[1.5px] rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 shadow-2xs">
+            <div className="bg-white px-2.5 py-1 rounded-[10.5px] text-slate-800 font-mono font-bold text-xs flex items-center gap-1">
+              <Heart className="w-3 h-3 text-rose-500 fill-rose-500 shrink-0" />
+              <span>{dDay > 0 ? `D+${dDay}` : dDay === 0 ? 'D-Day' : `D${dDay}`}</span>
+            </div>
           </div>
         )}
       </div>

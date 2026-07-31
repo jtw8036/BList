@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Reorder } from 'motion/react';
 import {
   StickyNote,
   Plus,
@@ -7,17 +8,25 @@ import {
   Edit2,
   Search,
   X,
+  GripVertical,
 } from 'lucide-react';
 import { MemoItem } from '../types';
+import { LongPressReorderItem } from './LongPressReorderItem';
+import { TrashModal } from './TrashModal';
 
 interface MemoListProps {
   items: MemoItem[];
   partner1Name: string;
   partner2Name: string;
+  trashItems?: MemoItem[];
   onAddMemo: (item: Partial<MemoItem>) => void;
   onUpdateMemo: (id: string, updated: Partial<MemoItem>) => void;
   onDeleteMemo: (id: string) => void;
   onTogglePin: (id: string) => void;
+  onReorderMemos?: (reordered: MemoItem[]) => void;
+  onRestoreItem?: (id: string) => void;
+  onEmptyTrash?: () => void;
+  onPurgeTrashItem?: (id: string) => void;
 }
 
 const COLOR_MAP: Record<
@@ -60,13 +69,19 @@ export const MemoList: React.FC<MemoListProps> = ({
   items,
   partner1Name,
   partner2Name,
+  trashItems = [],
   onAddMemo,
   onUpdateMemo,
   onDeleteMemo,
   onTogglePin,
+  onReorderMemos,
+  onRestoreItem,
+  onEmptyTrash,
+  onPurgeTrashItem,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
   const [editingMemo, setEditingMemo] = useState<MemoItem | null>(null);
 
   // Form states
@@ -140,6 +155,28 @@ export const MemoList: React.FC<MemoListProps> = ({
     setIsModalOpen(false);
   };
 
+  const handleReorder = (newFilteredOrder: MemoItem[]) => {
+    if (!onReorderMemos) return;
+    if (!searchQuery.trim()) {
+      onReorderMemos(newFilteredOrder);
+    } else {
+      const visibleIds = new Set(newFilteredOrder.map((i) => i.id));
+      const reorderedFull: MemoItem[] = [];
+      let visibleIdx = 0;
+      items.forEach((item) => {
+        if (visibleIds.has(item.id)) {
+          if (visibleIdx < newFilteredOrder.length) {
+            reorderedFull.push(newFilteredOrder[visibleIdx]);
+            visibleIdx++;
+          }
+        } else {
+          reorderedFull.push(item);
+        }
+      });
+      onReorderMemos(reorderedFull);
+    }
+  };
+
   return (
     <div className="space-y-4 pb-24 max-w-xl mx-auto px-4 pt-3">
       {/* Header Section */}
@@ -153,6 +190,19 @@ export const MemoList: React.FC<MemoListProps> = ({
             </span>
           </h2>
         </div>
+
+        <button
+          onClick={() => setIsTrashOpen(true)}
+          className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all shrink-0 relative"
+          title="휴지통"
+        >
+          <Trash2 className="w-4 h-4 text-slate-500" />
+          {trashItems && trashItems.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[18px] text-center shadow-2xs">
+              {trashItems.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Action Bar: Search & Add Button */}
@@ -199,66 +249,88 @@ export const MemoList: React.FC<MemoListProps> = ({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {filteredMemos.map((memo) => {
-            const colors = COLOR_MAP[memo.colorTag] || COLOR_MAP.amber;
+        <div className="space-y-2">
+          <Reorder.Group
+            axis="y"
+            values={filteredMemos}
+            onReorder={handleReorder}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-3"
+          >
+            {filteredMemos.map((memo) => {
+              const colors = COLOR_MAP[memo.colorTag] || COLOR_MAP.amber;
 
-            return (
-              <div
-                key={memo.id}
-                className={`relative rounded-2xl p-4 border transition-all duration-150 flex flex-col justify-between ${colors.bg} ${colors.border} shadow-2xs hover:shadow-xs`}
-              >
-                <div>
-                  {/* Top Bar: Title & Pin */}
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className={`font-bold text-sm ${colors.text} leading-snug flex-1`}>
-                      {memo.title}
-                    </h3>
-
-                    <button
-                      onClick={() => onTogglePin(memo.id)}
-                      className={`p-1 rounded-lg transition-colors shrink-0 ${
-                        memo.isPinned
-                          ? 'bg-slate-900 text-white shadow-2xs'
-                          : 'text-slate-400 hover:text-slate-600'
-                      }`}
-                      title={memo.isPinned ? '고정 해제' : '상단 고정'}
-                    >
-                      <Pin className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  {memo.content && (
-                    <p className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed mb-3">
-                      {memo.content}
-                    </p>
-                  )}
-                </div>
-
-                {/* Footer */}
-                <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[10px] text-slate-500 mt-2">
-                  <span className="font-medium text-slate-600">{memo.createdBy} 작성</span>
-
-                  <div className="flex items-center gap-1">
-                    <button
+              return (
+                <LongPressReorderItem
+                  key={memo.id}
+                  item={memo}
+                  activeRingColor="ring-[#EC4899]"
+                >
+                  {(isDragging) => (
+                    <div
                       onClick={() => handleOpenEdit(memo)}
-                      className="p-1 text-slate-400 hover:text-slate-700 rounded-md hover:bg-white/50"
-                      title="수정"
+                      className={`relative rounded-2xl p-4 border transition-all duration-150 flex flex-col justify-between h-full cursor-pointer ${colors.bg} ${colors.border} shadow-2xs hover:shadow-xs ${
+                        isDragging ? 'shadow-xl ring-2 ring-[#EC4899] scale-[1.02]' : ''
+                      }`}
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => onDeleteMemo(memo.id)}
-                      className="p-1 text-slate-400 hover:text-red-600 rounded-md hover:bg-white/50"
-                      title="삭제"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                      <div>
+                        {/* Top Bar: Title, Grip & Pin */}
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            <div className="text-slate-400 shrink-0 cursor-grab active:cursor-grabbing">
+                              <GripVertical className="w-4 h-4" />
+                            </div>
+                            <h3 className={`font-bold text-sm ${colors.text} leading-snug truncate`}>
+                              {memo.title}
+                            </h3>
+                          </div>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onTogglePin(memo.id);
+                            }}
+                            className={`p-1 rounded-lg transition-colors shrink-0 ${
+                              memo.isPinned
+                                ? 'bg-slate-900 text-white shadow-2xs'
+                                : 'text-slate-400 hover:text-slate-600'
+                            }`}
+                            title={memo.isPinned ? '고정 해제' : '상단 고정'}
+                          >
+                            <Pin className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+
+                        {memo.content && (
+                          <p className="text-xs text-slate-700 whitespace-pre-wrap leading-relaxed mb-3">
+                            {memo.content}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[10px] text-slate-500 mt-2">
+                        <span className="font-medium text-slate-600">{memo.createdBy} 작성</span>
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenEdit(memo);
+                            }}
+                            className="p-1 text-slate-400 hover:text-slate-700 rounded-md hover:bg-white/50 flex items-center gap-1 text-xs font-semibold"
+                            title="수정"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                            <span>수정</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </LongPressReorderItem>
+              );
+            })}
+          </Reorder.Group>
         </div>
       )}
 
@@ -357,6 +429,19 @@ export const MemoList: React.FC<MemoListProps> = ({
               </div>
 
               <div className="pt-3 flex gap-2">
+                {editingMemo && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onDeleteMemo(editingMemo.id);
+                      setIsModalOpen(false);
+                    }}
+                    className="py-2.5 px-3.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold flex items-center justify-center gap-1 shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>삭제</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -375,6 +460,17 @@ export const MemoList: React.FC<MemoListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Trash Modal */}
+      <TrashModal
+        isOpen={isTrashOpen}
+        onClose={() => setIsTrashOpen(false)}
+        title="메모 휴지통"
+        items={trashItems}
+        onRestore={(id) => onRestoreItem && onRestoreItem(id)}
+        onEmptyTrash={() => onEmptyTrash && onEmptyTrash()}
+        onPurgeItem={(id) => onPurgeTrashItem && onPurgeTrashItem(id)}
+      />
     </div>
   );
 };

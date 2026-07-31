@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Reorder } from 'motion/react';
 import { ChallengeItem, ChallengeSubGoal, ChallengeBonusLog } from '../types';
 import {
   Trophy,
@@ -12,28 +13,42 @@ import {
   Sparkles,
   Target,
   ShieldAlert,
+  GripVertical,
 } from 'lucide-react';
+import { LongPressReorderItem } from './LongPressReorderItem';
+import { TrashModal } from './TrashModal';
 
 interface ChallengeListProps {
   challenges: ChallengeItem[];
   partner1Name: string;
   partner2Name: string;
+  trashItems?: ChallengeItem[];
   onAddChallenge: (item: Partial<ChallengeItem>) => Promise<void>;
   onUpdateChallenge: (id: string, updated: Partial<ChallengeItem>) => Promise<void>;
   onDeleteChallenge: (id: string) => Promise<void>;
+  onReorderChallenges?: (reordered: ChallengeItem[]) => void;
+  onRestoreItem?: (id: string) => void;
+  onEmptyTrash?: () => void;
+  onPurgeTrashItem?: (id: string) => void;
 }
 
 export const ChallengeList: React.FC<ChallengeListProps> = ({
   challenges,
   partner1Name,
   partner2Name,
+  trashItems = [],
   onAddChallenge,
   onUpdateChallenge,
   onDeleteChallenge,
+  onReorderChallenges,
+  onRestoreItem,
+  onEmptyTrash,
+  onPurgeTrashItem,
 }) => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'completed'>('active');
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
   const [editingChallenge, setEditingChallenge] = useState<ChallengeItem | null>(null);
 
   // Additional completion item modal state
@@ -207,6 +222,28 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
     return matchesFilter && matchesSearch;
   });
 
+  const handleReorder = (newFilteredOrder: ChallengeItem[]) => {
+    if (!onReorderChallenges) return;
+    if (filterStatus === 'all' && !searchQuery.trim()) {
+      onReorderChallenges(newFilteredOrder);
+    } else {
+      const visibleIds = new Set(newFilteredOrder.map((i) => i.id));
+      const reorderedFull: ChallengeItem[] = [];
+      let visibleIdx = 0;
+      challenges.forEach((item) => {
+        if (visibleIds.has(item.id)) {
+          if (visibleIdx < newFilteredOrder.length) {
+            reorderedFull.push(newFilteredOrder[visibleIdx]);
+            visibleIdx++;
+          }
+        } else {
+          reorderedFull.push(item);
+        }
+      });
+      onReorderChallenges(reorderedFull);
+    }
+  };
+
   return (
     <div className="space-y-4 pb-24 max-w-xl mx-auto px-4 pt-3">
       {/* Header Section */}
@@ -220,6 +257,19 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
             </span>
           </h2>
         </div>
+
+        <button
+          onClick={() => setIsTrashOpen(true)}
+          className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all shrink-0 relative"
+          title="휴지통"
+        >
+          <Trash2 className="w-4 h-4 text-slate-500" />
+          {trashItems && trashItems.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[18px] text-center shadow-2xs">
+              {trashItems.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Action Bar: Search & Add Button */}
@@ -290,75 +340,91 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {filteredChallenges.map((item) => {
-            const isCompleted = item.status === 'completed';
-            const totalTarget = item.subGoals ? item.subGoals.reduce((acc, sg) => acc + sg.targetCount, 0) : 0;
-            const totalCurrent = item.subGoals ? item.subGoals.reduce((acc, sg) => acc + sg.currentCount, 0) : 0;
-            const progressPercent = totalTarget > 0 ? Math.min(100, Math.round((totalCurrent / totalTarget) * 100)) : 0;
+        <div className="space-y-2">
+          <Reorder.Group
+            axis="y"
+            values={filteredChallenges}
+            onReorder={handleReorder}
+            className="grid grid-cols-1 gap-4"
+          >
+            {filteredChallenges.map((item) => {
+              const isCompleted = item.status === 'completed';
+              const totalTarget = item.subGoals ? item.subGoals.reduce((acc, sg) => acc + sg.targetCount, 0) : 0;
+              const totalCurrent = item.subGoals ? item.subGoals.reduce((acc, sg) => acc + sg.currentCount, 0) : 0;
+              const progressPercent = totalTarget > 0 ? Math.min(100, Math.round((totalCurrent / totalTarget) * 100)) : 0;
 
-            return (
-              <div
-                key={item.id}
-                className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-2xs ${
-                  isCompleted ? 'border-emerald-200/80 bg-emerald-50/10' : 'border-slate-200/80'
-                }`}
-              >
-                {/* Card Header */}
-                <div className="p-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-slate-50/70">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-200/60 text-slate-800 border border-slate-300/50">
-                        {item.periodType === 'monthly' ? '월간' : item.periodType === 'weekly' ? '주간' : '상시'}
-                      </span>
-                      {item.challengeType === 'restriction' ? (
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200/80 flex items-center gap-1">
-                          <ShieldAlert className="w-3 h-3 text-rose-600" />
-                          <span>제한 챌린지</span>
-                        </span>
-                      ) : (
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 flex items-center gap-1">
-                          <Target className="w-3 h-3 text-emerald-600" />
-                          <span>달성 챌린지</span>
-                        </span>
-                      )}
-                      {isCompleted && (
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-white flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                          <span>종료됨</span>
-                        </span>
-                      )}
-                    </div>
+              return (
+                <LongPressReorderItem
+                  key={item.id}
+                  item={item}
+                  activeRingColor="ring-[#9333EA]"
+                >
+                  {(isDragging) => (
+                    <div
+                      className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-2xs ${
+                        isCompleted ? 'border-emerald-200/80 bg-emerald-50/10' : 'border-slate-200/80'
+                      } ${isDragging ? 'shadow-xl ring-2 ring-[#9333EA] scale-[1.01]' : ''}`}
+                    >
+                      {/* Card Header */}
+                      <div className="p-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-slate-50/70">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <div className="text-slate-400 shrink-0 cursor-grab active:cursor-grabbing p-0.5">
+                              <GripVertical className="w-4 h-4" />
+                            </div>
+                            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-200/60 text-slate-800 border border-slate-300/50">
+                              {item.periodType === 'monthly' ? '월간' : item.periodType === 'weekly' ? '주간' : '상시'}
+                            </span>
+                            {item.challengeType === 'restriction' ? (
+                              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800 border border-rose-200/80 flex items-center gap-1">
+                                <ShieldAlert className="w-3 h-3 text-rose-600" />
+                                <span>제한 챌린지</span>
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200/80 flex items-center gap-1">
+                                <Target className="w-3 h-3 text-emerald-600" />
+                                <span>달성 챌린지</span>
+                              </span>
+                            )}
+                            {isCompleted && (
+                              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-800 text-white flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                <span>종료됨</span>
+                              </span>
+                            )}
+                          </div>
 
-                    {/* Challenge Title */}
-                    <h3 className="text-base font-bold text-slate-900 tracking-tight pt-0.5">
-                      {item.title}
-                    </h3>
-                  </div>
+                          {/* Challenge Title */}
+                          <h3 className="text-base font-bold text-slate-900 tracking-tight pt-0.5">
+                            {item.title}
+                          </h3>
+                        </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => handleResetCounters(item)}
-                      title="달성 횟수 리셋"
-                      className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
-                    >
-                      <RotateCcw className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleOpenEditModal(item)}
-                      className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => onDeleteChallenge(item.id)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-slate-100 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                        {/* Actions */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleResetCounters(item);
+                            }}
+                            title="달성 횟수 리셋"
+                            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+                          >
+                            <RotateCcw className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenEditModal(item);
+                            }}
+                            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-1 text-xs font-semibold"
+                            title="수정 / 상세"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                            <span>수정</span>
+                          </button>
+                        </div>
+                      </div>
 
                 {/* Main Body */}
                 <div className="p-4 space-y-3.5">
@@ -521,9 +587,12 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
                     )}
                   </div>
                 </div>
-              </div>
-            );
-          })}
+                    </div>
+                  )}
+                </LongPressReorderItem>
+              );
+            })}
+          </Reorder.Group>
         </div>
       )}
 
@@ -691,6 +760,19 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
               </div>
 
               <div className="pt-3 flex gap-2">
+                {editingChallenge && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onDeleteChallenge(editingChallenge.id);
+                      setIsModalOpen(false);
+                    }}
+                    className="px-3.5 py-2.5 border border-rose-200 text-rose-600 hover:bg-rose-50 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shrink-0"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>삭제</span>
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
@@ -761,6 +843,17 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Trash Modal */}
+      <TrashModal
+        isOpen={isTrashOpen}
+        onClose={() => setIsTrashOpen(false)}
+        title="챌린지 휴지통"
+        items={trashItems}
+        onRestore={(id) => onRestoreItem && onRestoreItem(id)}
+        onEmptyTrash={() => onEmptyTrash && onEmptyTrash()}
+        onPurgeItem={(id) => onPurgeTrashItem && onPurgeTrashItem(id)}
+      />
     </div>
   );
 };

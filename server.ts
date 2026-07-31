@@ -138,6 +138,7 @@ const createDefaultRoom = (code: string): CoupleRoom => {
       buckets: templateSource.buckets.map((b) => ({ ...b, coupleCode: code })),
       memos: templateSource.memos.map((m) => ({ ...m, coupleCode: code })),
       challenges: templateSource.challenges.map((c) => ({ ...c, coupleCode: code })),
+      trash: { buckets: [], memos: [], challenges: [] },
     };
   }
   const now = new Date().toISOString();
@@ -152,7 +153,18 @@ const createDefaultRoom = (code: string): CoupleRoom => {
     buckets: [],
     memos: [],
     challenges: [],
+    trash: { buckets: [], memos: [], challenges: [] },
   };
+};
+
+const ensureTrash = (code: string) => {
+  if (!memoryStore[code]) return;
+  if (!memoryStore[code].trash) {
+    memoryStore[code].trash = { buckets: [], memos: [], challenges: [] };
+  }
+  if (!memoryStore[code].trash!.buckets) memoryStore[code].trash!.buckets = [];
+  if (!memoryStore[code].trash!.memos) memoryStore[code].trash!.memos = [];
+  if (!memoryStore[code].trash!.challenges) memoryStore[code].trash!.challenges = [];
 };
 
 // Ensure default room exists
@@ -269,10 +281,38 @@ app.delete("/api/couple/:code/buckets/:id", (req, res) => {
   const code = req.params.code.toUpperCase().trim();
   const id = req.params.id;
   if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  ensureTrash(code);
 
-  memoryStore[code].buckets = memoryStore[code].buckets.filter((b) => b.id !== id);
+  const itemIndex = memoryStore[code].buckets.findIndex((b) => b.id === id);
+  if (itemIndex !== -1) {
+    const [deletedItem] = memoryStore[code].buckets.splice(itemIndex, 1);
+    memoryStore[code].trash!.buckets.unshift(deletedItem);
+  }
+
   saveStore(memoryStore);
-  res.json({ success: true });
+  res.json({ success: true, trash: memoryStore[code].trash });
+});
+
+// Reorder Buckets
+app.put("/api/couple/:code/reorder/buckets", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  const { itemIds } = req.body;
+  if (!memoryStore[code] || !Array.isArray(itemIds)) return res.status(400).json({ error: "Invalid payload" });
+
+  const existingMap = new Map(memoryStore[code].buckets.map((b) => [b.id, b]));
+  const reordered: any[] = [];
+  itemIds.forEach((id: string) => {
+    const item = existingMap.get(id);
+    if (item) {
+      reordered.push(item);
+      existingMap.delete(id);
+    }
+  });
+  existingMap.forEach((item) => reordered.push(item));
+
+  memoryStore[code].buckets = reordered;
+  saveStore(memoryStore);
+  res.json({ success: true, buckets: reordered });
 });
 
 app.post("/api/couple/:code/buckets/:id/like", (req, res) => {
@@ -338,10 +378,38 @@ app.delete("/api/couple/:code/memos/:id", (req, res) => {
   const code = req.params.code.toUpperCase().trim();
   const id = req.params.id;
   if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  ensureTrash(code);
 
-  memoryStore[code].memos = memoryStore[code].memos.filter((m) => m.id !== id);
+  const itemIndex = memoryStore[code].memos.findIndex((m) => m.id === id);
+  if (itemIndex !== -1) {
+    const [deletedItem] = memoryStore[code].memos.splice(itemIndex, 1);
+    memoryStore[code].trash!.memos.unshift(deletedItem);
+  }
+
   saveStore(memoryStore);
-  res.json({ success: true });
+  res.json({ success: true, trash: memoryStore[code].trash });
+});
+
+// Reorder Memos
+app.put("/api/couple/:code/reorder/memos", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  const { itemIds } = req.body;
+  if (!memoryStore[code] || !Array.isArray(itemIds)) return res.status(400).json({ error: "Invalid payload" });
+
+  const existingMap = new Map(memoryStore[code].memos.map((m) => [m.id, m]));
+  const reordered: any[] = [];
+  itemIds.forEach((id: string) => {
+    const item = existingMap.get(id);
+    if (item) {
+      reordered.push(item);
+      existingMap.delete(id);
+    }
+  });
+  existingMap.forEach((item) => reordered.push(item));
+
+  memoryStore[code].memos = reordered;
+  saveStore(memoryStore);
+  res.json({ success: true, memos: reordered });
 });
 
 // Challenge CRUD
@@ -398,12 +466,117 @@ app.delete("/api/couple/:code/challenges/:id", (req, res) => {
   const code = req.params.code.toUpperCase().trim();
   const id = req.params.id;
   if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  if (!memoryStore[code].challenges) memoryStore[code].challenges = [];
+  ensureTrash(code);
+
+  const itemIndex = memoryStore[code].challenges.findIndex((c) => c.id === id);
+  if (itemIndex !== -1) {
+    const [deletedItem] = memoryStore[code].challenges.splice(itemIndex, 1);
+    memoryStore[code].trash!.challenges.unshift(deletedItem);
+  }
+
+  saveStore(memoryStore);
+  res.json({ success: true, trash: memoryStore[code].trash });
+});
+
+// Trash APIs
+app.get("/api/couple/:code/trash", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  ensureTrash(code);
+  res.json({ success: true, trash: memoryStore[code].trash });
+});
+
+app.post("/api/couple/:code/trash/restore", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  const { type, id } = req.body; // type: 'buckets' | 'memos' | 'challenges'
+  if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  ensureTrash(code);
+
+  if (type === "buckets") {
+    const idx = memoryStore[code].trash!.buckets.findIndex((b) => b.id === id);
+    if (idx !== -1) {
+      const [restored] = memoryStore[code].trash!.buckets.splice(idx, 1);
+      memoryStore[code].buckets.unshift(restored);
+    }
+  } else if (type === "memos") {
+    const idx = memoryStore[code].trash!.memos.findIndex((m) => m.id === id);
+    if (idx !== -1) {
+      const [restored] = memoryStore[code].trash!.memos.splice(idx, 1);
+      memoryStore[code].memos.unshift(restored);
+    }
+  } else if (type === "challenges") {
+    if (!memoryStore[code].challenges) memoryStore[code].challenges = [];
+    const idx = memoryStore[code].trash!.challenges.findIndex((c) => c.id === id);
+    if (idx !== -1) {
+      const [restored] = memoryStore[code].trash!.challenges.splice(idx, 1);
+      memoryStore[code].challenges.unshift(restored);
+    }
+  }
+
+  saveStore(memoryStore);
+  res.json({
+    success: true,
+    buckets: memoryStore[code].buckets,
+    memos: memoryStore[code].memos,
+    challenges: memoryStore[code].challenges,
+    trash: memoryStore[code].trash,
+  });
+});
+
+app.post("/api/couple/:code/trash/empty", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  const { type } = req.body; // 'buckets' | 'memos' | 'challenges' | 'all'
+  if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  ensureTrash(code);
+
+  if (type === "buckets" || type === "all") memoryStore[code].trash!.buckets = [];
+  if (type === "memos" || type === "all") memoryStore[code].trash!.memos = [];
+  if (type === "challenges" || type === "all") memoryStore[code].trash!.challenges = [];
+
+  saveStore(memoryStore);
+  res.json({ success: true, trash: memoryStore[code].trash });
+});
+
+app.post("/api/couple/:code/trash/purge", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  const { type, id } = req.body;
+  if (!memoryStore[code]) return res.status(404).json({ error: "Space not found" });
+  ensureTrash(code);
+
+  if (type === "buckets") {
+    memoryStore[code].trash!.buckets = memoryStore[code].trash!.buckets.filter((b) => b.id !== id);
+  } else if (type === "memos") {
+    memoryStore[code].trash!.memos = memoryStore[code].trash!.memos.filter((m) => m.id !== id);
+  } else if (type === "challenges") {
+    memoryStore[code].trash!.challenges = memoryStore[code].trash!.challenges.filter((c) => c.id !== id);
+  }
+
+  saveStore(memoryStore);
+  res.json({ success: true, trash: memoryStore[code].trash });
+});
+
+// Reorder Challenges
+app.put("/api/couple/:code/reorder/challenges", (req, res) => {
+  const code = req.params.code.toUpperCase().trim();
+  const { itemIds } = req.body;
+  if (!memoryStore[code] || !Array.isArray(itemIds)) return res.status(400).json({ error: "Invalid payload" });
 
   if (!memoryStore[code].challenges) memoryStore[code].challenges = [];
+  const existingMap = new Map(memoryStore[code].challenges.map((c) => [c.id, c]));
+  const reordered: any[] = [];
+  itemIds.forEach((id: string) => {
+    const item = existingMap.get(id);
+    if (item) {
+      reordered.push(item);
+      existingMap.delete(id);
+    }
+  });
+  existingMap.forEach((item) => reordered.push(item));
 
-  memoryStore[code].challenges = memoryStore[code].challenges.filter((c) => c.id !== id);
+  memoryStore[code].challenges = reordered;
   saveStore(memoryStore);
-  res.json({ success: true });
+  res.json({ success: true, challenges: reordered });
 });
 
 // Gemini AI Recommendation Endpoint

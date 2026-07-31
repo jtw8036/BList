@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Reorder } from 'motion/react';
 import {
   CheckCircle2,
   Circle,
@@ -10,27 +11,44 @@ import {
   CheckSquare,
   ChevronRight,
   FileText,
+  GripVertical,
 } from 'lucide-react';
 import { BucketItem } from '../types';
+import { LongPressReorderItem } from './LongPressReorderItem';
+import { TrashModal } from './TrashModal';
 
 interface BucketListProps {
   items: BucketItem[];
   partner1Name: string;
   partner2Name: string;
+  trashItems?: BucketItem[];
   onAddItem: (item: Partial<BucketItem>) => void;
   onUpdateItem: (id: string, updated: Partial<BucketItem>) => void;
   onDeleteItem: (id: string) => void;
   onLikeItem?: (id: string) => void;
+  onReorderItems?: (reordered: BucketItem[]) => void;
+  onRestoreItem?: (id: string) => void;
+  onEmptyTrash?: () => void;
+  onPurgeTrashItem?: (id: string) => void;
 }
 
 export const BucketList: React.FC<BucketListProps> = ({
   items,
+  partner1Name,
+  partner2Name,
+  trashItems = [],
   onAddItem,
   onUpdateItem,
   onDeleteItem,
+  onLikeItem,
+  onReorderItems,
+  onRestoreItem,
+  onEmptyTrash,
+  onPurgeTrashItem,
 }) => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'planned' | 'completed'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isTrashOpen, setIsTrashOpen] = useState(false);
 
   // Detail Modal state
   const [selectedDetailItem, setSelectedDetailItem] = useState<BucketItem | null>(null);
@@ -125,11 +143,31 @@ export const BucketList: React.FC<BucketListProps> = ({
 
   const handleDelete = (id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    if (confirm('이 버킷리스트 항목을 삭제하시겠습니까?')) {
-      onDeleteItem(id);
-      if (selectedDetailItem?.id === id) {
-        setSelectedDetailItem(null);
-      }
+    onDeleteItem(id);
+    if (selectedDetailItem?.id === id) {
+      setSelectedDetailItem(null);
+    }
+  };
+
+  const handleReorder = (newFilteredOrder: BucketItem[]) => {
+    if (!onReorderItems) return;
+    if (statusFilter === 'all' && !searchQuery.trim()) {
+      onReorderItems(newFilteredOrder);
+    } else {
+      const visibleIds = new Set(newFilteredOrder.map((i) => i.id));
+      const reorderedFull: BucketItem[] = [];
+      let visibleIdx = 0;
+      items.forEach((item) => {
+        if (visibleIds.has(item.id)) {
+          if (visibleIdx < newFilteredOrder.length) {
+            reorderedFull.push(newFilteredOrder[visibleIdx]);
+            visibleIdx++;
+          }
+        } else {
+          reorderedFull.push(item);
+        }
+      });
+      onReorderItems(reorderedFull);
     }
   };
 
@@ -146,6 +184,19 @@ export const BucketList: React.FC<BucketListProps> = ({
             </span>
           </h2>
         </div>
+
+        <button
+          onClick={() => setIsTrashOpen(true)}
+          className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all shrink-0 relative"
+          title="휴지통"
+        >
+          <Trash2 className="w-4 h-4 text-slate-500" />
+          {trashItems && trashItems.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold px-1.5 py-0.2 rounded-full min-w-[18px] text-center shadow-2xs">
+              {trashItems.length}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Action Bar: Search & Add Button */}
@@ -210,50 +261,69 @@ export const BucketList: React.FC<BucketListProps> = ({
         </div>
       ) : (
         <div className="space-y-2">
-          {filteredItems.map((item) => {
-            const isCompleted = item.status === 'completed';
+          <Reorder.Group
+            axis="y"
+            values={filteredItems}
+            onReorder={handleReorder}
+            className="space-y-2"
+          >
+            {filteredItems.map((item) => {
+              const isCompleted = item.status === 'completed';
 
-            return (
-              <div
-                key={item.id}
-                onClick={() => setSelectedDetailItem(item)}
-                className={`group bg-white rounded-2xl px-3.5 py-3 border transition-all duration-150 flex items-center justify-between gap-3 cursor-pointer hover:border-slate-400 hover:shadow-xs active:scale-[0.99] ${
-                  isCompleted
-                    ? 'border-slate-200 bg-slate-50/70 opacity-75'
-                    : 'border-slate-200/80 shadow-2xs'
-                }`}
-              >
-                {/* Checkbox */}
-                <button
-                  onClick={(e) => handleToggleComplete(item, e)}
-                  className="text-slate-300 hover:text-slate-800 transition-colors shrink-0 p-0.5"
-                  title={isCompleted ? '미완료로 변경' : '달성 완료'}
+              return (
+                <LongPressReorderItem
+                  key={item.id}
+                  item={item}
+                  activeRingColor="ring-[#FF2E93]"
+                  onItemClick={() => setSelectedDetailItem(item)}
                 >
-                  {isCompleted ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 fill-emerald-50" />
-                  ) : (
-                    <Circle className="w-5 h-5 text-slate-300 hover:text-slate-500" />
+                  {(isDragging) => (
+                    <div
+                      className={`group bg-white rounded-2xl px-3.5 py-3 border transition-all duration-150 flex items-center justify-between gap-2.5 cursor-pointer hover:border-slate-400 hover:shadow-xs ${
+                        isCompleted
+                          ? 'border-slate-200 bg-slate-50/70 opacity-75'
+                          : 'border-slate-200/80 shadow-2xs'
+                      } ${isDragging ? 'border-pink-300 shadow-xl scale-[1.01]' : ''}`}
+                    >
+                      {/* Drag Grip Icon */}
+                      <div className="text-slate-300 group-hover:text-slate-500 shrink-0 cursor-grab active:cursor-grabbing p-0.5">
+                        <GripVertical className="w-4 h-4" />
+                      </div>
+
+                      {/* Checkbox */}
+                      <button
+                        onClick={(e) => handleToggleComplete(item, e)}
+                        className="text-slate-300 hover:text-slate-800 transition-colors shrink-0 p-0.5"
+                        title={isCompleted ? '미완료로 변경' : '달성 완료'}
+                      >
+                        {isCompleted ? (
+                          <CheckCircle2 className="w-5 h-5 text-emerald-600 fill-emerald-50" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-slate-300 hover:text-slate-500" />
+                        )}
+                      </button>
+
+                      {/* Title */}
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <span
+                          className={`font-bold text-slate-900 text-xs sm:text-sm truncate ${
+                            isCompleted ? 'line-through text-slate-400 font-medium' : ''
+                          }`}
+                        >
+                          {item.title}
+                        </span>
+                      </div>
+
+                      {/* Arrow */}
+                      <div className="flex items-center gap-1 shrink-0 text-slate-300 group-hover:text-slate-600 transition-colors">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                    </div>
                   )}
-                </button>
-
-                {/* Title */}
-                <div className="flex-1 min-w-0 flex items-center gap-2">
-                  <span
-                    className={`font-bold text-slate-900 text-xs sm:text-sm truncate ${
-                      isCompleted ? 'line-through text-slate-400 font-medium' : ''
-                    }`}
-                  >
-                    {item.title}
-                  </span>
-                </div>
-
-                {/* Arrow */}
-                <div className="flex items-center gap-1 shrink-0 text-slate-300 group-hover:text-slate-600 transition-colors">
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              </div>
-            );
-          })}
+                </LongPressReorderItem>
+              );
+            })}
+          </Reorder.Group>
         </div>
       )}
 
@@ -261,25 +331,18 @@ export const BucketList: React.FC<BucketListProps> = ({
       {selectedDetailItem && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in-95 duration-150">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-base font-black text-slate-900">
-                버킷 상세 내용
+            {/* Header with Bucket Title directly */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 gap-3">
+              <h3 className="text-base font-black text-slate-900 leading-snug truncate">
+                {selectedDetailItem.title}
               </h3>
 
               <button
                 onClick={() => setSelectedDetailItem(null)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100"
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
-            </div>
-
-            {/* Title */}
-            <div>
-              <h4 className="text-lg font-black text-slate-900 leading-snug">
-                {selectedDetailItem.title}
-              </h4>
             </div>
 
             {/* Notes Section */}
@@ -384,6 +447,17 @@ export const BucketList: React.FC<BucketListProps> = ({
           </div>
         </div>
       )}
+
+      {/* Trash Modal */}
+      <TrashModal
+        isOpen={isTrashOpen}
+        onClose={() => setIsTrashOpen(false)}
+        title="버킷리스트 휴지통"
+        items={trashItems}
+        onRestore={(id) => onRestoreItem && onRestoreItem(id)}
+        onEmptyTrash={() => onEmptyTrash && onEmptyTrash()}
+        onPurgeItem={(id) => onPurgeTrashItem && onPurgeTrashItem(id)}
+      />
     </div>
   );
 };

@@ -25,6 +25,11 @@ export default function App() {
   const [buckets, setBuckets] = useState<BucketItem[]>([]);
   const [memos, setMemos] = useState<MemoItem[]>([]);
   const [challenges, setChallenges] = useState<ChallengeItem[]>([]);
+  const [trash, setTrash] = useState<{
+    buckets: BucketItem[];
+    memos: MemoItem[];
+    challenges: ChallengeItem[];
+  }>({ buckets: [], memos: [], challenges: [] });
   const [loading, setLoading] = useState(true);
 
   // Load Data for Couple Space
@@ -37,6 +42,7 @@ export default function App() {
         if (data.buckets) setBuckets(data.buckets);
         if (data.memos) setMemos(data.memos);
         if (data.challenges) setChallenges(data.challenges);
+        if (data.trash) setTrash(data.trash);
       }
     } catch (err) {
       console.error('Error fetching couple data:', err);
@@ -113,7 +119,9 @@ export default function App() {
         method: 'DELETE',
       });
       if (res.ok) {
+        const data = await res.json();
         setChallenges((prev) => prev.filter((c) => c.id !== id));
+        if (data.trash) setTrash(data.trash);
       }
     } catch (err) {
       console.error('Error deleting challenge:', err);
@@ -159,7 +167,9 @@ export default function App() {
         method: 'DELETE',
       });
       if (res.ok) {
+        const data = await res.json();
         setBuckets((prev) => prev.filter((b) => b.id !== id));
+        if (data.trash) setTrash(data.trash);
       }
     } catch (err) {
       console.error('Error deleting bucket:', err);
@@ -221,10 +231,64 @@ export default function App() {
         method: 'DELETE',
       });
       if (res.ok) {
+        const data = await res.json();
         setMemos((prev) => prev.filter((m) => m.id !== id));
+        if (data.trash) setTrash(data.trash);
       }
     } catch (err) {
       console.error('Error deleting memo:', err);
+    }
+  };
+
+  // Trash Operations
+  const handleRestoreItem = async (type: 'buckets' | 'memos' | 'challenges', id: string) => {
+    try {
+      const res = await fetch(`/api/couple/${coupleCode}/trash/restore`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.buckets) setBuckets(data.buckets);
+        if (data.memos) setMemos(data.memos);
+        if (data.challenges) setChallenges(data.challenges);
+        if (data.trash) setTrash(data.trash);
+      }
+    } catch (err) {
+      console.error('Error restoring trash item:', err);
+    }
+  };
+
+  const handleEmptyTrash = async (type: 'buckets' | 'memos' | 'challenges' | 'all') => {
+    try {
+      const res = await fetch(`/api/couple/${coupleCode}/trash/empty`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.trash) setTrash(data.trash);
+      }
+    } catch (err) {
+      console.error('Error emptying trash:', err);
+    }
+  };
+
+  const handlePurgeTrashItem = async (type: 'buckets' | 'memos' | 'challenges', id: string) => {
+    try {
+      const res = await fetch(`/api/couple/${coupleCode}/trash/purge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type, id }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.trash) setTrash(data.trash);
+      }
+    } catch (err) {
+      console.error('Error purging trash item:', err);
     }
   };
 
@@ -232,6 +296,45 @@ export default function App() {
     const memo = memos.find((m) => m.id === id);
     if (memo) {
       handleUpdateMemo(id, { isPinned: !memo.isPinned });
+    }
+  };
+
+  const handleReorderBuckets = async (reordered: BucketItem[]) => {
+    setBuckets(reordered);
+    try {
+      await fetch(`/api/couple/${coupleCode}/reorder/buckets`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds: reordered.map((i) => i.id) }),
+      });
+    } catch (err) {
+      console.error('Error reordering buckets:', err);
+    }
+  };
+
+  const handleReorderMemos = async (reordered: MemoItem[]) => {
+    setMemos(reordered);
+    try {
+      await fetch(`/api/couple/${coupleCode}/reorder/memos`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds: reordered.map((i) => i.id) }),
+      });
+    } catch (err) {
+      console.error('Error reordering memos:', err);
+    }
+  };
+
+  const handleReorderChallenges = async (reordered: ChallengeItem[]) => {
+    setChallenges(reordered);
+    try {
+      await fetch(`/api/couple/${coupleCode}/reorder/challenges`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemIds: reordered.map((i) => i.id) }),
+      });
+    } catch (err) {
+      console.error('Error reordering challenges:', err);
     }
   };
 
@@ -262,10 +365,15 @@ export default function App() {
                 items={buckets}
                 partner1Name={profile.partner1Name}
                 partner2Name={profile.partner2Name}
+                trashItems={trash.buckets}
                 onAddItem={handleAddBucket}
                 onUpdateItem={handleUpdateBucket}
                 onDeleteItem={handleDeleteBucket}
                 onLikeItem={handleLikeBucket}
+                onReorderItems={handleReorderBuckets}
+                onRestoreItem={(id) => handleRestoreItem('buckets', id)}
+                onEmptyTrash={() => handleEmptyTrash('buckets')}
+                onPurgeTrashItem={(id) => handlePurgeTrashItem('buckets', id)}
               />
             )}
 
@@ -274,10 +382,15 @@ export default function App() {
                 items={memos}
                 partner1Name={profile.partner1Name}
                 partner2Name={profile.partner2Name}
+                trashItems={trash.memos}
                 onAddMemo={handleAddMemo}
                 onUpdateMemo={handleUpdateMemo}
                 onDeleteMemo={handleDeleteMemo}
                 onTogglePin={handleTogglePinMemo}
+                onReorderMemos={handleReorderMemos}
+                onRestoreItem={(id) => handleRestoreItem('memos', id)}
+                onEmptyTrash={() => handleEmptyTrash('memos')}
+                onPurgeTrashItem={(id) => handlePurgeTrashItem('memos', id)}
               />
             )}
 
@@ -286,9 +399,14 @@ export default function App() {
                 challenges={challenges}
                 partner1Name={profile.partner1Name}
                 partner2Name={profile.partner2Name}
+                trashItems={trash.challenges}
                 onAddChallenge={handleAddChallenge}
                 onUpdateChallenge={handleUpdateChallenge}
                 onDeleteChallenge={handleDeleteChallenge}
+                onReorderChallenges={handleReorderChallenges}
+                onRestoreItem={(id) => handleRestoreItem('challenges', id)}
+                onEmptyTrash={() => handleEmptyTrash('challenges')}
+                onPurgeTrashItem={(id) => handlePurgeTrashItem('challenges', id)}
               />
             )}
 
