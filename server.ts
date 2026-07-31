@@ -93,6 +93,11 @@ interface CoupleRoom {
     category: string;
     status: string;
   }>;
+  trash?: {
+    buckets?: any[];
+    memos?: any[];
+    challenges?: any[];
+  };
 }
 
 type StoreData = Record<string, CoupleRoom>;
