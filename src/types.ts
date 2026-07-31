@@ -1,4 +1,4 @@
-export type BucketCategory = 'travel' | 'food' | 'activity' | 'purchase' | 'anniversary' | 'daily';
+export type BucketCategory = 'travel' | 'food' | 'activity' | 'purchase' | 'anniversary' | 'daily' | 'date' | 'sports' | 'culture' | 'goal';
 export type BucketStatus = 'planned' | 'in_progress' | 'completed';
 
 export interface BucketItem {
@@ -15,11 +15,11 @@ export interface BucketItem {
   note?: string;
   photoUrl?: string;
   tags: string[];
-  likes: number;
+  likes?: number;
   createdAt: string;
 }
 
-export type MemoCategory = 'memo' | 'dday' | 'anniversary' | 'photo_log' | 'wishlist';
+export type MemoCategory = 'memo' | 'dday' | 'anniversary' | 'photo_log' | 'wishlist' | 'event' | 'travel' | 'idea';
 
 export interface ChallengeSubGoal {
   id: string;
@@ -71,6 +71,7 @@ export interface MemoItem {
   colorTag: 'rose' | 'amber' | 'emerald' | 'sky' | 'purple' | 'slate' | 'stone';
   createdBy: string;
   photoUrl?: string;
+  createdAt?: string;
   updatedAt: string;
 }
 

@@ -7,6 +7,7 @@ import { ChallengeList } from './components/ChallengeList';
 import { ProfileView } from './components/ProfileView';
 import { BucketItem, MemoItem, ChallengeItem, CoupleProfile } from './types';
 import { Heart } from 'lucide-react';
+import { getDefaultCoupleData } from './data/initialData';
 
 // Helper for local storage persistence (GitHub Pages / Offline compatibility)
 const getLocalStorageData = (code: string) => {
@@ -27,115 +28,16 @@ const saveLocalStorageData = (code: string, data: any) => {
   }
 };
 
-const createDefaultLocalData = (code: string) => {
-  return {
-    profile: {
-      coupleCode: code,
-      partner1Name: '태웅',
-      partner2Name: '서주',
-      anniversaryDate: '2025-05-20',
-      statusMessage: '너랑 나랑 둘만의 소중한 기록 ❤️',
-      avatarUrl: '',
-      coverImage: '',
-    },
-    buckets: [
-      {
-        id: 'b_sample_1',
-        coupleCode: code,
-        title: '제주도 스쿠터 여행하기 🛵',
-        category: 'travel',
-        status: 'planned',
-        targetDate: '2026-09-15',
-        createdBy: '태웅',
-        location: '제주특별자치도',
-        note: '해안도로 따라서 라이딩하고 오션뷰 카페 가기',
-        tags: ['여행', '제주도', '스쿠터'],
-        likes: 1,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: 'b_sample_2',
-        coupleCode: code,
-        title: '커플 요리 클래스 수강하기 🍳',
-        category: 'date',
-        status: 'completed',
-        completedDate: '2026-02-14',
-        completedBy: '서주',
-        createdBy: '서주',
-        note: '파스타랑 파이 만들기 성공!',
-        tags: ['데이트', '요리'],
-        likes: 2,
-        createdAt: new Date().toISOString(),
-      },
-    ],
-    memos: [
-      {
-        id: 'm_sample_1',
-        coupleCode: code,
-        title: '서주가 좋아하는 디저트 리스트 🍰',
-        content: '1. 딸기 생크림 케이크\n2. 피스타치오 마카롱\n3. 아이스 바닐라 라떼 (샷 추가)',
-        category: 'memo',
-        colorTag: 'rose',
-        isPinned: true,
-        createdBy: '태웅',
-        updatedAt: new Date().toISOString(),
-      },
-      {
-        id: 'm_sample_2',
-        coupleCode: code,
-        title: '다음 커플 여행 후보지 ✈️',
-        content: '- 1순위: 오키나와\n- 2순위: 삿포로 겨울 여행\n- 3순위: 다낭 리조트 휴양',
-        category: 'wishlist',
-        colorTag: 'sky',
-        isPinned: false,
-        createdBy: '서주',
-        updatedAt: new Date().toISOString(),
-      },
-    ],
-    challenges: [
-      {
-        id: 'c_sample_1',
-        coupleCode: code,
-        title: '주 3회 함께 산책하기 👟',
-        description: '퇴근 후 저녁 공원에서 30분씩 걷기',
-        periodType: 'monthly',
-        category: 'habit',
-        status: 'active',
-        subGoals: [
-          {
-            id: 'sg_1',
-            title: '월간 목표 달성',
-            targetCount: 12,
-            currentCount: 5,
-            unit: '회',
-          },
-        ],
-        bonusLogs: [],
-        createdBy: '태웅',
-        createdAt: new Date().toISOString(),
-      },
-    ],
-    trash: { buckets: [], memos: [], challenges: [] },
-  };
-};
-
 export default function App() {
   const [coupleCode, setCoupleCode] = useState<string>(() => {
-    return localStorage.getItem('couple_code') || 'LOVE-2026';
+    return localStorage.getItem('couple_code') || '20240831';
   });
 
   const [activeTab, setActiveTab] = useState<NavTab>('bucket');
-  const [profile, setProfile] = useState<CoupleProfile>({
-    coupleCode: 'LOVE-2026',
-    partner1Name: '태웅',
-    partner2Name: '서주',
-    anniversaryDate: '2025-05-20',
-    statusMessage: '너랑 나랑 둘만의 소중한 기록 ❤️',
-  });
-
-  const [buckets, setBuckets] = useState<BucketItem[]>([]);
-  const [memos, setMemos] = useState<MemoItem[]>([]);
-  const [challenges, setChallenges] = useState<ChallengeItem[]>([]);
+  const [profile, setProfile] = useState<CoupleProfile>(() => getDefaultCoupleData('20240831').profile);
+  const [buckets, setBuckets] = useState<BucketItem[]>(() => getDefaultCoupleData('20240831').buckets);
+  const [memos, setMemos] = useState<MemoItem[]>(() => getDefaultCoupleData('20240831').memos);
+  const [challenges, setChallenges] = useState<ChallengeItem[]>(() => getDefaultCoupleData('20240831').challenges);
   const [trash, setTrash] = useState<{
     buckets: BucketItem[];
     memos: MemoItem[];
@@ -145,7 +47,7 @@ export default function App() {
 
   // Sync current state to local storage helper
   const syncToLocal = (code: string, updatedState: Partial<{ profile: CoupleProfile; buckets: BucketItem[]; memos: MemoItem[]; challenges: ChallengeItem[]; trash: any }>) => {
-    const current = getLocalStorageData(code) || createDefaultLocalData(code);
+    const current = getLocalStorageData(code) || getDefaultCoupleData(code);
     const merged = {
       profile: updatedState.profile ?? current.profile ?? profile,
       buckets: updatedState.buckets ?? current.buckets ?? buckets,
@@ -162,23 +64,25 @@ export default function App() {
       const res = await fetch(`/api/couple/${code}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.profile) setProfile(data.profile);
-        if (data.buckets) setBuckets(data.buckets);
-        if (data.memos) setMemos(data.memos);
-        if (data.challenges) setChallenges(data.challenges);
-        if (data.trash) setTrash(data.trash);
-        saveLocalStorageData(code, data);
-        setLoading(false);
-        return;
+        if (data.buckets && data.buckets.length > 5) {
+          if (data.profile) setProfile(data.profile);
+          if (data.buckets) setBuckets(data.buckets);
+          if (data.memos) setMemos(data.memos);
+          if (data.challenges) setChallenges(data.challenges);
+          if (data.trash) setTrash(data.trash);
+          saveLocalStorageData(code, data);
+          setLoading(false);
+          return;
+        }
       }
     } catch (err) {
       console.warn('API unavailable, using client storage:', err);
     }
 
-    // Fallback to local storage or create default data
+    // Fallback to local storage or create real default data
     let localData = getLocalStorageData(code);
-    if (!localData) {
-      localData = createDefaultLocalData(code);
+    if (!localData || !localData.buckets || localData.buckets.length < 5) {
+      localData = getDefaultCoupleData(code);
       saveLocalStorageData(code, localData);
     }
     if (localData.profile) setProfile(localData.profile);
