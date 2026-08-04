@@ -63,11 +63,27 @@ export default function App() {
     });
   };
 
-  useEffect(() => {
-    localStorage.setItem('couple_code', coupleCode);
+  // Load Data for Couple Space
+  const fetchCoupleData = async (code: string) => {
+    try {
+      const res = await fetch(`/api/couple/${code}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.profile) setProfile(data.profile);
+        if (data.buckets) setBuckets(data.buckets);
+        if (data.memos) setMemos(data.memos);
+        if (data.challenges) setChallenges(data.challenges);
+        if (data.trash) setTrash(data.trash);
+        saveLocalStorageData(code, data);
+        setLoading(false);
+        return;
+      }
+    } catch (err) {
+      console.warn('API unavailable, using client storage:', err);
+    }
 
-    // Fallback to local storage initially while waiting for Firebase
-    const localData = getLocalStorageData(coupleCode);
+    // Fallback to local storage ONLY if API fails
+    const localData = getLocalStorageData(code);
     if (localData) {
       if (localData.profile) setProfile(localData.profile);
       if (localData.buckets) setBuckets(localData.buckets);
@@ -75,17 +91,22 @@ export default function App() {
       if (localData.challenges) setChallenges(localData.challenges);
       if (localData.trash) setTrash(localData.trash);
     } else {
-      const defaultData = getDefaultCoupleData(coupleCode);
+      const defaultData = getDefaultCoupleData(code);
       setProfile(defaultData.profile);
       setBuckets(defaultData.buckets);
       setMemos(defaultData.memos);
       setChallenges(defaultData.challenges);
     }
     setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCoupleData(coupleCode);
+    localStorage.setItem('couple_code', coupleCode);
 
     // Setup Firebase realtime listener
     let unsubscribe = () => {};
-    import('./firebase').then(({ db, doc, onSnapshot }) => {
+    import('./firebase').then(({ db, doc, onSnapshot, setDoc }) => {
       unsubscribe = onSnapshot(doc(db, "couples", coupleCode), (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
@@ -95,6 +116,15 @@ export default function App() {
           if (data.challenges) setChallenges(data.challenges);
           if (data.trash) setTrash(data.trash);
           saveLocalStorageData(coupleCode, data as any);
+        } else {
+          // Firebase is empty, push our local state to heal the database
+          const localData = getLocalStorageData(coupleCode);
+          if (localData) {
+            setDoc(doc(db, "couples", coupleCode), localData).catch(console.error);
+          } else {
+            const defaultData = getDefaultCoupleData(coupleCode);
+            setDoc(doc(db, "couples", coupleCode), defaultData).catch(console.error);
+          }
         }
       }, (err) => {
         console.error("Firebase listen error:", err);
@@ -110,15 +140,6 @@ export default function App() {
     setProfile(newProfile);
     syncToLocal(coupleCode, { profile: newProfile });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/profile`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   // Challenge CRUD
@@ -137,24 +158,6 @@ export default function App() {
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      const res = await fetch(`/api/couple/${coupleCode}/challenges`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setChallenges((prev) => {
-          const next = [data.item, ...prev];
-          syncToLocal(coupleCode, { challenges: next });
-          return next;
-        });
-        return;
-      }
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
 
     setChallenges((prev) => {
       const next = [newItem, ...prev];
@@ -170,15 +173,6 @@ export default function App() {
       return next;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/challenges/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleDeleteChallenge = async (id: string) => {
@@ -197,13 +191,6 @@ export default function App() {
       return nextTrash;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/challenges/${id}`, {
-        method: 'DELETE',
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   // Bucket CRUD
@@ -226,24 +213,6 @@ export default function App() {
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      const res = await fetch(`/api/couple/${coupleCode}/buckets`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setBuckets((prev) => {
-          const next = [data.item, ...prev];
-          syncToLocal(coupleCode, { buckets: next });
-          return next;
-        });
-        return;
-      }
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
 
     setBuckets((prev) => {
       const next = [newItem, ...prev];
@@ -259,15 +228,6 @@ export default function App() {
       return next;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/buckets/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleDeleteBucket = async (id: string) => {
@@ -286,13 +246,6 @@ export default function App() {
       return nextTrash;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/buckets/${id}`, {
-        method: 'DELETE',
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleLikeBucket = async (id: string) => {
@@ -302,13 +255,6 @@ export default function App() {
       return next;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/buckets/${id}/like`, {
-        method: 'POST',
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   // Memo CRUD
@@ -325,24 +271,6 @@ export default function App() {
       updatedAt: new Date().toISOString(),
     };
 
-    try {
-      const res = await fetch(`/api/couple/${coupleCode}/memos`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(item),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setMemos((prev) => {
-          const next = [data.item, ...prev];
-          syncToLocal(coupleCode, { memos: next });
-          return next;
-        });
-        return;
-      }
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
 
     setMemos((prev) => {
       const next = [newItem, ...prev];
@@ -360,15 +288,6 @@ export default function App() {
       return next;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/memos/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updated),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleDeleteMemo = async (id: string) => {
@@ -387,13 +306,6 @@ export default function App() {
       return nextTrash;
     });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/memos/${id}`, {
-        method: 'DELETE',
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   // Trash Operations
@@ -421,15 +333,6 @@ export default function App() {
       }
     }
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/trash/restore`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, id }),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleEmptyTrash = async (type: 'buckets' | 'memos' | 'challenges' | 'all') => {
@@ -442,15 +345,6 @@ export default function App() {
     setTrash(newTrash);
     syncToLocal(coupleCode, { trash: newTrash });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/trash/empty`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type }),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handlePurgeTrashItem = async (type: 'buckets' | 'memos' | 'challenges', id: string) => {
@@ -461,15 +355,6 @@ export default function App() {
     setTrash(newTrash);
     syncToLocal(coupleCode, { trash: newTrash });
 
-    try {
-      await fetch(`/api/couple/${coupleCode}/trash/purge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, id }),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleTogglePinMemo = (id: string) => {
@@ -482,43 +367,16 @@ export default function App() {
   const handleReorderBuckets = async (reordered: BucketItem[]) => {
     setBuckets(reordered);
     syncToLocal(coupleCode, { buckets: reordered });
-    try {
-      await fetch(`/api/couple/${coupleCode}/reorder/buckets`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemIds: reordered.map((i) => i.id) }),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleReorderMemos = async (reordered: MemoItem[]) => {
     setMemos(reordered);
     syncToLocal(coupleCode, { memos: reordered });
-    try {
-      await fetch(`/api/couple/${coupleCode}/reorder/memos`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemIds: reordered.map((i) => i.id) }),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleReorderChallenges = async (reordered: ChallengeItem[]) => {
     setChallenges(reordered);
     syncToLocal(coupleCode, { challenges: reordered });
-    try {
-      await fetch(`/api/couple/${coupleCode}/reorder/challenges`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemIds: reordered.map((i) => i.id) }),
-      });
-    } catch (err) {
-      console.warn('Server sync skipped:', err);
-    }
   };
 
   const handleSwitchCode = (newCode: string) => {

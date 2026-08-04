@@ -146,10 +146,11 @@ const fetchFromFirebase = async (code: string) => {
       memoryStore[code] = snap.data() as CoupleRoom;
       return true;
     }
+    return false; // Does not exist
   } catch (err) {
     console.error("Error fetching from Firebase:", err);
+    return null; // Error occurred
   }
-  return false;
 };
 
 // Default starter data for new couple rooms
@@ -222,7 +223,13 @@ app.get("/api/health", (_req, res) => {
 app.get("/api/couple/:code", async (req, res) => {
   const code = (req.params.code || DEFAULT_CODE).toUpperCase().trim();
   const loaded = await fetchFromFirebase(code);
-  if (!loaded) {
+  
+  if (loaded === null) {
+    // If it's null, there was an error connecting to DB
+    return res.status(500).json({ error: "Failed to connect to database" });
+  }
+
+  if (loaded === false) {
     if (!memoryStore[code]) {
       memoryStore[code] = createDefaultRoom(code);
     }
