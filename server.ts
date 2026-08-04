@@ -5,6 +5,8 @@ import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getDefaultCoupleData } from "./src/data/initialData";
+// removed getFirestore duplicate, doc, getDoc, setDoc } from "firebase/firestore";
 
 const app = express();
 const PORT = 3000;
@@ -38,7 +40,7 @@ interface CoupleRoom {
     partner1Name: string;
     partner2Name: string;
     anniversaryDate: string;
-    statusMessage: string;
+    statusMessage?: string;
   };
   buckets: Array<{
     id: string;
@@ -54,7 +56,7 @@ interface CoupleRoom {
     note?: string;
     photoUrl?: string;
     tags: string[];
-    likes: number;
+    likes?: number;
     createdAt: string;
   }>;
   memos: Array<{
@@ -154,47 +156,21 @@ const fetchFromFirebase = async (code: string) => {
 };
 
 // Default starter data for new couple rooms
-const createDefaultRoom = (code: string): CoupleRoom => {
-  const diskData = loadStore();
-  const templateSource = diskData["LOVE-2026"] || memoryStore["LOVE-2026"];
-  if (templateSource) {
-    return {
-      profile: {
-        ...templateSource.profile,
-        coupleCode: code,
-      },
-      buckets: templateSource.buckets.map((b) => ({ ...b, coupleCode: code })),
-      memos: templateSource.memos.map((m) => ({ ...m, coupleCode: code })),
-      challenges: templateSource.challenges.map((c) => ({ ...c, coupleCode: code })),
-      trash: { buckets: [], memos: [], challenges: [] },
-    };
-  }
-  const now = new Date().toISOString();
-  return {
-    profile: {
-      coupleCode: code,
-      partner1Name: "태웅",
-      partner2Name: "서주",
-      anniversaryDate: "2025-05-20",
-      statusMessage: "너랑 나랑 둘만의 소중한 기록 ❤️",
-    },
-    buckets: [],
-    memos: [],
-    challenges: [],
-    trash: { buckets: [], memos: [], challenges: [] },
-  };
-};
 
 const ensureTrash = (code: string) => {
-  if (!memoryStore[code]) return;
   if (!memoryStore[code].trash) {
     memoryStore[code].trash = { buckets: [], memos: [], challenges: [] };
   }
-  if (!memoryStore[code].trash!.buckets) memoryStore[code].trash!.buckets = [];
-  if (!memoryStore[code].trash!.memos) memoryStore[code].trash!.memos = [];
-  if (!memoryStore[code].trash!.challenges) memoryStore[code].trash!.challenges = [];
 };
 
+const createDefaultRoom = (code: string): CoupleRoom => {
+  const defaultData = getDefaultCoupleData(code);
+  return {
+    ...defaultData,
+    challenges: defaultData.challenges || [],
+    trash: defaultData.trash || { buckets: [], memos: [], challenges: [] }
+  };
+};
 // Ensure default room exists
 const DEFAULT_CODE = "LOVE-2026";
 if (!memoryStore[DEFAULT_CODE]) {
