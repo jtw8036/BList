@@ -56,29 +56,18 @@ export default function App() {
       trash: updatedState.trash ?? current.trash ?? trash,
     };
     saveLocalStorageData(code, merged);
+
+    // Sync to Firebase directly
+    import('./firebase').then(({ db, doc, setDoc }) => {
+      setDoc(doc(db, "couples", code), merged).catch(e => console.error("Firebase sync error", e));
+    });
   };
 
-  // Load Data for Couple Space
-  const fetchCoupleData = async (code: string) => {
-    try {
-      const res = await fetch(`/api/couple/${code}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.profile) setProfile(data.profile);
-        if (data.buckets) setBuckets(data.buckets);
-        if (data.memos) setMemos(data.memos);
-        if (data.challenges) setChallenges(data.challenges);
-        if (data.trash) setTrash(data.trash);
-        saveLocalStorageData(code, data);
-        setLoading(false);
-        return;
-      }
-    } catch (err) {
-      console.warn('API unavailable, using client storage:', err);
-    }
+  useEffect(() => {
+    localStorage.setItem('couple_code', coupleCode);
 
-    // Fallback to local storage ONLY if API fails
-    let localData = getLocalStorageData(code);
+    // Fallback to local storage initially while waiting for Firebase
+    const localData = getLocalStorageData(coupleCode);
     if (localData) {
       if (localData.profile) setProfile(localData.profile);
       if (localData.buckets) setBuckets(localData.buckets);
@@ -86,31 +75,33 @@ export default function App() {
       if (localData.challenges) setChallenges(localData.challenges);
       if (localData.trash) setTrash(localData.trash);
     } else {
-      // Offline & no local data: fallback to default UI
-      const defaultData = getDefaultCoupleData(code);
+      const defaultData = getDefaultCoupleData(coupleCode);
       setProfile(defaultData.profile);
       setBuckets(defaultData.buckets);
       setMemos(defaultData.memos);
       setChallenges(defaultData.challenges);
     }
     setLoading(false);
-  };
 
-  useEffect(() => {
-    fetchCoupleData(coupleCode);
-    localStorage.setItem('couple_code', coupleCode);
+    // Setup Firebase realtime listener
+    let unsubscribe = () => {};
+    import('./firebase').then(({ db, doc, onSnapshot }) => {
+      unsubscribe = onSnapshot(doc(db, "couples", coupleCode), (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          if (data.profile) setProfile(data.profile);
+          if (data.buckets) setBuckets(data.buckets);
+          if (data.memos) setMemos(data.memos);
+          if (data.challenges) setChallenges(data.challenges);
+          if (data.trash) setTrash(data.trash);
+          saveLocalStorageData(coupleCode, data as any);
+        }
+      }, (err) => {
+        console.error("Firebase listen error:", err);
+      });
+    });
 
-    const handleFocus = () => {
-      fetchCoupleData(coupleCode);
-    };
-
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleFocus);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleFocus);
-    };
+    return () => unsubscribe();
   }, [coupleCode]);
 
   // Profile update handler
