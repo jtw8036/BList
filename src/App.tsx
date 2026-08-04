@@ -64,32 +64,35 @@ export default function App() {
       const res = await fetch(`/api/couple/${code}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.buckets && data.buckets.length > 5) {
-          if (data.profile) setProfile(data.profile);
-          if (data.buckets) setBuckets(data.buckets);
-          if (data.memos) setMemos(data.memos);
-          if (data.challenges) setChallenges(data.challenges);
-          if (data.trash) setTrash(data.trash);
-          saveLocalStorageData(code, data);
-          setLoading(false);
-          return;
-        }
+        if (data.profile) setProfile(data.profile);
+        if (data.buckets) setBuckets(data.buckets);
+        if (data.memos) setMemos(data.memos);
+        if (data.challenges) setChallenges(data.challenges);
+        if (data.trash) setTrash(data.trash);
+        saveLocalStorageData(code, data);
+        setLoading(false);
+        return;
       }
     } catch (err) {
       console.warn('API unavailable, using client storage:', err);
     }
 
-    // Fallback to local storage or create real default data
+    // Fallback to local storage ONLY if API fails
     let localData = getLocalStorageData(code);
-    if (!localData || !localData.buckets || localData.buckets.length < 5) {
-      localData = getDefaultCoupleData(code);
-      saveLocalStorageData(code, localData);
+    if (localData) {
+      if (localData.profile) setProfile(localData.profile);
+      if (localData.buckets) setBuckets(localData.buckets);
+      if (localData.memos) setMemos(localData.memos);
+      if (localData.challenges) setChallenges(localData.challenges);
+      if (localData.trash) setTrash(localData.trash);
+    } else {
+      // Offline & no local data: fallback to default UI
+      const defaultData = getDefaultCoupleData(code);
+      setProfile(defaultData.profile);
+      setBuckets(defaultData.buckets);
+      setMemos(defaultData.memos);
+      setChallenges(defaultData.challenges);
     }
-    if (localData.profile) setProfile(localData.profile);
-    if (localData.buckets) setBuckets(localData.buckets);
-    if (localData.memos) setMemos(localData.memos);
-    if (localData.challenges) setChallenges(localData.challenges);
-    if (localData.trash) setTrash(localData.trash);
     setLoading(false);
   };
 
