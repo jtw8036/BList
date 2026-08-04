@@ -3,6 +3,8 @@ import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
+import { initializeApp } from "firebase/app";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 const app = express();
 const PORT = 3000;
@@ -102,33 +104,53 @@ interface CoupleRoom {
 
 type StoreData = Record<string, CoupleRoom>;
 
+let db: any = null;
+try {
+  const configPath = path.join(process.cwd(), "firebase-applet-config.json");
+  const firebaseConfig = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+  const firebaseApp = initializeApp(firebaseConfig);
+  db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId);
+} catch (err) {
+  console.error("Firebase initialization failed:", err);
+}
+
+// Keep a local in-memory mirror to avoid rewriting all routes to async
+let memoryStore: StoreData = {};
+
 const loadStore = (): StoreData => {
-  try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, "utf-8");
-      return JSON.parse(raw);
-    }
-  } catch (err) {
-    console.error("Error reading data store:", err);
-  }
-  return {};
+  return memoryStore;
 };
 
 const saveStore = (data: StoreData) => {
+  // Sync to disk as fallback (optional, but good for local dev)
   try {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
-    }
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) { }
+};
+
+const syncToFirebase = async (code: string) => {
+  if (!db || !memoryStore[code]) return;
+  try {
+    await setDoc(doc(db, "couples", code), memoryStore[code]);
   } catch (err) {
-    console.error("Error writing data store:", err);
+    console.error("Error syncing to Firebase:", err);
   }
 };
 
-let memoryStore: StoreData = loadStore();
+const fetchFromFirebase = async (code: string) => {
+  if (!db) return false;
+  try {
+    const snap = await getDoc(doc(db, "couples", code));
+    if (snap.exists()) {
+      memoryStore[code] = snap.data() as CoupleRoom;
+      return true;
+    }
+  } catch (err) {
+    console.error("Error fetching from Firebase:", err);
+  }
+  return false;
+};
 
 // Default starter data for new couple rooms
 const createDefaultRoom = (code: string): CoupleRoom => {
@@ -185,19 +207,20 @@ app.get("/api/health", (_req, res) => {
 });
 
 // Get or initialize couple space
-app.get("/api/couple/:code", (req, res) => {
+app.get("/api/couple/:code", async (req, res) => {
   const code = (req.params.code || DEFAULT_CODE).toUpperCase().trim();
-  const diskData = loadStore();
-  if (diskData[code]) {
-    memoryStore[code] = diskData[code];
-  } else if (!memoryStore[code]) {
-    memoryStore[code] = createDefaultRoom(code);
+  const loaded = await fetchFromFirebase(code);
+  if (!loaded) {
+    if (!memoryStore[code]) {
+      memoryStore[code] = createDefaultRoom(code);
+    }
     saveStore(memoryStore);
+    await syncToFirebase(code);
   }
   res.json(memoryStore[code]);
 });
 
-app.post("/api/couple/init", (req, res) => {
+app.post("/api/couple/init", async (req, res) => {
   let { coupleCode } = req.body;
   if (!coupleCode || typeof coupleCode !== "string") {
     coupleCode = DEFAULT_CODE;
@@ -205,9 +228,11 @@ app.post("/api/couple/init", (req, res) => {
     coupleCode = coupleCode.toUpperCase().trim();
   }
 
-  if (!memoryStore[coupleCode]) {
+  const loaded = await fetchFromFirebase(coupleCode);
+  if (!loaded && !memoryStore[coupleCode]) {
     memoryStore[coupleCode] = createDefaultRoom(coupleCode);
     saveStore(memoryStore);
+    await syncToFirebase(coupleCode);
   }
 
   res.json({ success: true, room: memoryStore[coupleCode] });
@@ -217,21 +242,21 @@ app.post("/api/couple/init", (req, res) => {
 app.put("/api/couple/:code/profile", (req, res) => {
   const code = req.params.code.toUpperCase().trim();
   if (!memoryStore[code]) {
-    memoryStore[code] = createDefaultRoom(code);
+    return res.status(404).json({ error: "Couple space not found" });
   }
 
   const { partner1Name, partner2Name, anniversaryDate, statusMessage, avatarUrl, coverImage } = req.body;
   memoryStore[code].profile = {
     ...memoryStore[code].profile,
-    ...(partner1Name !== undefined && { partner1Name }),
-    ...(partner2Name !== undefined && { partner2Name }),
-    ...(anniversaryDate !== undefined && { anniversaryDate }),
+    ...(partner1Name && { partner1Name }),
+    ...(partner2Name && { partner2Name }),
+    ...(anniversaryDate && { anniversaryDate }),
     ...(statusMessage !== undefined && { statusMessage }),
     ...(avatarUrl !== undefined && { avatarUrl }),
     ...(coverImage !== undefined && { coverImage }),
   };
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, profile: memoryStore[code].profile });
 });
 
@@ -261,7 +286,7 @@ app.post("/api/couple/:code/buckets", (req, res) => {
   };
 
   memoryStore[code].buckets.unshift(newItem);
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, item: newItem });
 });
 
@@ -278,7 +303,7 @@ app.put("/api/couple/:code/buckets/:id", (req, res) => {
     ...req.body,
   };
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, item: memoryStore[code].buckets[idx] });
 });
 
@@ -294,7 +319,7 @@ app.delete("/api/couple/:code/buckets/:id", (req, res) => {
     memoryStore[code].trash!.buckets.unshift(deletedItem);
   }
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, trash: memoryStore[code].trash });
 });
 
@@ -316,7 +341,7 @@ app.put("/api/couple/:code/reorder/buckets", (req, res) => {
   existingMap.forEach((item) => reordered.push(item));
 
   memoryStore[code].buckets = reordered;
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, buckets: reordered });
 });
 
@@ -328,7 +353,7 @@ app.post("/api/couple/:code/buckets/:id/like", (req, res) => {
   const item = memoryStore[code].buckets.find((b) => b.id === id);
   if (item) {
     item.likes = (item.likes || 0) + 1;
-    saveStore(memoryStore);
+    saveStore(memoryStore); syncToFirebase(code).catch(console.error);
     res.json({ success: true, likes: item.likes });
   } else {
     res.status(404).json({ error: "Item not found" });
@@ -357,7 +382,7 @@ app.post("/api/couple/:code/memos", (req, res) => {
   };
 
   memoryStore[code].memos.unshift(newMemo);
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, item: newMemo });
 });
 
@@ -375,7 +400,7 @@ app.put("/api/couple/:code/memos/:id", (req, res) => {
     updatedAt: new Date().toISOString(),
   };
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, item: memoryStore[code].memos[idx] });
 });
 
@@ -391,7 +416,7 @@ app.delete("/api/couple/:code/memos/:id", (req, res) => {
     memoryStore[code].trash!.memos.unshift(deletedItem);
   }
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, trash: memoryStore[code].trash });
 });
 
@@ -413,7 +438,7 @@ app.put("/api/couple/:code/reorder/memos", (req, res) => {
   existingMap.forEach((item) => reordered.push(item));
 
   memoryStore[code].memos = reordered;
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, memos: reordered });
 });
 
@@ -444,7 +469,7 @@ app.post("/api/couple/:code/challenges", (req, res) => {
   };
 
   memoryStore[code].challenges.unshift(newChallenge);
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, item: newChallenge });
 });
 
@@ -463,7 +488,7 @@ app.put("/api/couple/:code/challenges/:id", (req, res) => {
     ...req.body,
   };
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, item: memoryStore[code].challenges[idx] });
 });
 
@@ -480,7 +505,7 @@ app.delete("/api/couple/:code/challenges/:id", (req, res) => {
     memoryStore[code].trash!.challenges.unshift(deletedItem);
   }
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, trash: memoryStore[code].trash });
 });
 
@@ -519,7 +544,7 @@ app.post("/api/couple/:code/trash/restore", (req, res) => {
     }
   }
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({
     success: true,
     buckets: memoryStore[code].buckets,
@@ -539,7 +564,7 @@ app.post("/api/couple/:code/trash/empty", (req, res) => {
   if (type === "memos" || type === "all") memoryStore[code].trash!.memos = [];
   if (type === "challenges" || type === "all") memoryStore[code].trash!.challenges = [];
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, trash: memoryStore[code].trash });
 });
 
@@ -557,7 +582,7 @@ app.post("/api/couple/:code/trash/purge", (req, res) => {
     memoryStore[code].trash!.challenges = memoryStore[code].trash!.challenges.filter((c) => c.id !== id);
   }
 
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, trash: memoryStore[code].trash });
 });
 
@@ -580,7 +605,7 @@ app.put("/api/couple/:code/reorder/challenges", (req, res) => {
   existingMap.forEach((item) => reordered.push(item));
 
   memoryStore[code].challenges = reordered;
-  saveStore(memoryStore);
+  saveStore(memoryStore); syncToFirebase(code).catch(console.error);
   res.json({ success: true, challenges: reordered });
 });
 

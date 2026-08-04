@@ -55,7 +55,7 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ onAddIdeaToBucket }) =
   };
 
   return (
-    <div className="space-y-4 pb-24 max-w-xl mx-auto px-4 pt-3">
+    <div className="space-y-4 pb-32 max-w-xl mx-auto px-4 pt-3">
       {/* Hero Header */}
       <div className="bg-gradient-to-tr from-purple-600 via-pink-600 to-rose-500 rounded-3xl p-5 text-white shadow-lg shadow-purple-200 relative overflow-hidden">
         <div className="flex items-center gap-2 mb-1">

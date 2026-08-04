@@ -1,0 +1,16 @@
+{
+  "collections": [
+    {
+      "name": "couples",
+      "documentId": "coupleCode",
+      "fields": [
+        { "name": "coupleCode", "type": "string" },
+        { "name": "profile", "type": "map" },
+        { "name": "buckets", "type": "array" },
+        { "name": "memos", "type": "array" },
+        { "name": "challenges", "type": "array" },
+        { "name": "trash", "type": "map" }
+      ]
+    }
+  ]
+}

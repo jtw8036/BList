@@ -245,7 +245,7 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-36 max-w-xl mx-auto px-4 pt-3">
+    <div className="space-y-4 pb-32 max-w-xl mx-auto px-4 pt-3">
       {/* Header Section */}
       <div className="flex items-center justify-between px-1 pt-1">
         <div>

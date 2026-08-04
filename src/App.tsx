@@ -64,7 +64,7 @@ export default function App() {
       const res = await fetch(`/api/couple/${code}`);
       if (res.ok) {
         const data = await res.json();
-        if (data) {
+        if (data.buckets && data.buckets.length > 5) {
           if (data.profile) setProfile(data.profile);
           if (data.buckets) setBuckets(data.buckets);
           if (data.memos) setMemos(data.memos);
@@ -81,7 +81,7 @@ export default function App() {
 
     // Fallback to local storage or create real default data
     let localData = getLocalStorageData(code);
-    if (!localData) {
+    if (!localData || !localData.buckets || localData.buckets.length < 5) {
       localData = getDefaultCoupleData(code);
       saveLocalStorageData(code, localData);
     }
@@ -97,13 +97,6 @@ export default function App() {
     fetchCoupleData(coupleCode);
     localStorage.setItem('couple_code', coupleCode);
 
-    // Auto-poll server every 3.5 seconds when active to keep partner devices perfectly in sync
-    const interval = setInterval(() => {
-      if (document.visibilityState === 'visible') {
-        fetchCoupleData(coupleCode);
-      }
-    }, 3500);
-
     const handleFocus = () => {
       fetchCoupleData(coupleCode);
     };
@@ -112,7 +105,6 @@ export default function App() {
     document.addEventListener('visibilitychange', handleFocus);
 
     return () => {
-      clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
       document.removeEventListener('visibilitychange', handleFocus);
     };

@@ -52,7 +52,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-30 pt-2 pb-[max(1.25rem,env(safe-area-inset-bottom,1.25rem))] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+    <nav 
+      className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200/80 z-30 shadow-lg" 
+      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 20px) + 12px)' }}
+    >
       {/* Hidden SVG Definitions for Horizontal Gradient Sync */}
       <svg className="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
         <defs>

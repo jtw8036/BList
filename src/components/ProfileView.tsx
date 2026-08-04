@@ -24,19 +24,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onUpdateProfile,
   onSwitchCode,
 }) => {
-  const [partner1Name, setPartner1Name] = useState(profile.partner1Name || '');
-  const [partner2Name, setPartner2Name] = useState(profile.partner2Name || '');
-  const [anniversaryDate, setAnniversaryDate] = useState(profile.anniversaryDate || '');
+  const [partner1Name, setPartner1Name] = useState(profile.partner1Name);
+  const [anniversaryDate, setAnniversaryDate] = useState(profile.anniversaryDate);
   const [copied, setCopied] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [inputCode, setInputCode] = useState('');
-
-  // Sync state if profile prop changes (e.g. from server sync or switching code)
-  React.useEffect(() => {
-    setPartner1Name(profile.partner1Name || '');
-    setPartner2Name(profile.partner2Name || '');
-    setAnniversaryDate(profile.anniversaryDate || '');
-  }, [profile.partner1Name, profile.partner2Name, profile.anniversaryDate]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -70,7 +62,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     e.preventDefault();
     onUpdateProfile({
       partner1Name: partner1Name.trim(),
-      partner2Name: partner2Name.trim(),
       anniversaryDate,
     });
     setSavedSuccess(true);
@@ -115,7 +106,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 pb-36 max-w-xl mx-auto px-4 pt-3">
+    <div className="space-y-4 pb-32 max-w-xl mx-auto px-4 pt-3">
       {/* Overview Card with Photo on Upper Left */}
       <div className="bg-gradient-to-r from-[#3B82F6] to-[#0284C7] rounded-3xl p-6 text-white shadow-md relative overflow-hidden">
         <div className="flex items-center justify-between">
@@ -231,33 +222,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
 
         <form onSubmit={handleSaveProfile} className="space-y-3.5 text-xs">
-          <div className="grid grid-cols-2 gap-2.5">
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
-              <label className="block font-bold text-slate-800 mb-1">
-                내 이름 (파트너 1)
-              </label>
-              <input
-                type="text"
-                value={partner1Name}
-                onChange={(e) => setPartner1Name(e.target.value)}
-                placeholder="태웅"
-                className="w-full px-3 py-2 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 text-slate-900 font-medium"
-                required
-              />
-            </div>
-
-            <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
-              <label className="block font-bold text-slate-800 mb-1">
-                상대방 이름 (파트너 2)
-              </label>
-              <input
-                type="text"
-                value={partner2Name}
-                onChange={(e) => setPartner2Name(e.target.value)}
-                placeholder="서주"
-                className="w-full px-3 py-2 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 text-slate-900 font-medium"
-              />
-            </div>
+          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+            <label className="block font-bold text-slate-800 mb-1.5">
+              내 이름
+            </label>
+            <input
+              type="text"
+              value={partner1Name}
+              onChange={(e) => setPartner1Name(e.target.value)}
+              placeholder="내 이름 입력"
+              className="w-full px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800"
+              required
+            />
           </div>
 
           <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
@@ -268,23 +244,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               type="date"
               value={anniversaryDate}
               onChange={(e) => setAnniversaryDate(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 text-slate-800 font-medium focus:outline-none focus:border-slate-800 min-h-[44px] box-border"
+              className="w-full max-w-full box-border px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 appearance-none"
               required
             />
           </div>
 
-          {savedSuccess && (
-            <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 font-bold text-center flex items-center justify-center gap-1.5 animate-fadeIn">
-              <Check className="w-4 h-4 text-emerald-600" />
-              <span>프로필 정보가 정상적으로 저장되었습니다!</span>
-            </div>
-          )}
-
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-[#3B82F6] to-[#0284C7] hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-xs transition-opacity flex items-center justify-center gap-2"
+            className="w-full py-2.5 bg-gradient-to-r from-[#3B82F6] to-[#0284C7] hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-xs transition-opacity"
           >
-            <span>프로필 정보 저장</span>
+            프로필 정보 저장
           </button>
         </form>
       </div>
