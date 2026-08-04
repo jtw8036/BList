@@ -201,6 +201,18 @@ if (!memoryStore[DEFAULT_CODE]) {
   saveStore(memoryStore);
 }
 
+// Global middleware to always sync from Firebase before handling couple API requests
+app.use(async (req, res, next) => {
+  if (req.path.startsWith("/api/couple/")) {
+    const parts = req.path.split("/");
+    const code = parts[3];
+    if (code && code !== "init") {
+      await fetchFromFirebase(code.toUpperCase().trim());
+    }
+  }
+  next();
+});
+
 // API Routes
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", time: new Date().toISOString() });
