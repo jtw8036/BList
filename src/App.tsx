@@ -30,14 +30,16 @@ const saveLocalStorageData = (code: string, data: any) => {
 
 export default function App() {
   const [coupleCode, setCoupleCode] = useState<string>(() => {
-    return localStorage.getItem('couple_code') || '20240831';
+    let code = localStorage.getItem('couple_code');
+    if (!code || code === '20240831') code = 'LOVE-2026';
+    return code;
   });
 
   const [activeTab, setActiveTab] = useState<NavTab>('bucket');
-  const [profile, setProfile] = useState<CoupleProfile>(() => getDefaultCoupleData('20240831').profile);
-  const [buckets, setBuckets] = useState<BucketItem[]>(() => getDefaultCoupleData('20240831').buckets);
-  const [memos, setMemos] = useState<MemoItem[]>(() => getDefaultCoupleData('20240831').memos);
-  const [challenges, setChallenges] = useState<ChallengeItem[]>(() => getDefaultCoupleData('20240831').challenges);
+  const [profile, setProfile] = useState<CoupleProfile>(() => getDefaultCoupleData('LOVE-2026').profile);
+  const [buckets, setBuckets] = useState<BucketItem[]>(() => getDefaultCoupleData('LOVE-2026').buckets);
+  const [memos, setMemos] = useState<MemoItem[]>(() => getDefaultCoupleData('LOVE-2026').memos);
+  const [challenges, setChallenges] = useState<ChallengeItem[]>(() => getDefaultCoupleData('LOVE-2026').challenges);
   const [trash, setTrash] = useState<{
     buckets: BucketItem[];
     memos: MemoItem[];
