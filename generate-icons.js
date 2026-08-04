@@ -1,5 +1,9 @@
+import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
 
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+const svgContent = (size) => `
+<svg width="${size}" height="${size}" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGrad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="#FF6596"/>
@@ -27,3 +31,39 @@
   <!-- Couples Text Logo Badge inside heart -->
   <text x="256" y="245" text-anchor="middle" font-family="'Pretendard', sans-serif" font-weight="900" font-size="64" fill="#F43F5E" letter-spacing="2">T♥S</text>
 </svg>
+`;
+
+async function generate() {
+  const publicDir = path.resolve('public');
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
+
+  const svgBuffer = Buffer.from(svgContent(512));
+
+  // Save favicon.svg and icon.svg
+  fs.writeFileSync(path.join(publicDir, 'favicon.svg'), svgContent(512));
+  fs.writeFileSync(path.join(publicDir, 'icon.svg'), svgContent(512));
+
+  // 180x180 for iOS Apple Touch Icon
+  await sharp(svgBuffer)
+    .resize(180, 180)
+    .png({ quality: 100 })
+    .toFile(path.join(publicDir, 'apple-touch-icon.png'));
+
+  // 192x192
+  await sharp(svgBuffer)
+    .resize(192, 192)
+    .png({ quality: 100 })
+    .toFile(path.join(publicDir, 'icon-192.png'));
+
+  // 512x512
+  await sharp(svgBuffer)
+    .resize(512, 512)
+    .png({ quality: 100 })
+    .toFile(path.join(publicDir, 'icon-512.png'));
+
+  console.log('Icons successfully generated!');
+}
+
+generate().catch(console.error);

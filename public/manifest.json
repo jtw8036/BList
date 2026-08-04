@@ -1,7 +1,13 @@
 {
   "short_name": "T♡S",
-  "name": "T♡S",
+  "name": "T♡S 커플버킷",
   "icons": [
+    {
+      "src": "apple-touch-icon.png",
+      "type": "image/png",
+      "sizes": "180x180",
+      "purpose": "any"
+    },
     {
       "src": "icon-192.png",
       "type": "image/png",
@@ -13,28 +19,12 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
-    },
-    {
-      "src": "apple-touch-icon.png",
-      "type": "image/png",
-      "sizes": "180x180"
-    },
-    {
-      "src": "icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "favicon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
     }
   ],
   "start_url": "./",
   "scope": "./",
   "background_color": "#ffffff",
-  "theme_color": "#fff0f3",
+  "theme_color": "#F43F5E",
   "display": "standalone",
   "orientation": "portrait",
   "description": "여자친구와 둘이 함께 쓰는 비밀 버킷리스트와 메모"
