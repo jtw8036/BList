@@ -217,15 +217,15 @@ app.post("/api/couple/init", (req, res) => {
 app.put("/api/couple/:code/profile", (req, res) => {
   const code = req.params.code.toUpperCase().trim();
   if (!memoryStore[code]) {
-    return res.status(404).json({ error: "Couple space not found" });
+    memoryStore[code] = createDefaultRoom(code);
   }
 
   const { partner1Name, partner2Name, anniversaryDate, statusMessage, avatarUrl, coverImage } = req.body;
   memoryStore[code].profile = {
     ...memoryStore[code].profile,
-    ...(partner1Name && { partner1Name }),
-    ...(partner2Name && { partner2Name }),
-    ...(anniversaryDate && { anniversaryDate }),
+    ...(partner1Name !== undefined && { partner1Name }),
+    ...(partner2Name !== undefined && { partner2Name }),
+    ...(anniversaryDate !== undefined && { anniversaryDate }),
     ...(statusMessage !== undefined && { statusMessage }),
     ...(avatarUrl !== undefined && { avatarUrl }),
     ...(coverImage !== undefined && { coverImage }),
