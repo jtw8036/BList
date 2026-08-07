@@ -172,7 +172,7 @@ const createDefaultRoom = (code: string): CoupleRoom => {
   };
 };
 // Ensure default room exists
-const DEFAULT_CODE = "LOVE-2026";
+const DEFAULT_CODE = "20240831";
 if (!memoryStore[DEFAULT_CODE]) {
   memoryStore[DEFAULT_CODE] = createDefaultRoom(DEFAULT_CODE);
   saveStore(memoryStore);

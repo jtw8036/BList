@@ -1,7 +1,7 @@
 import { CoupleProfile, BucketItem, MemoItem, ChallengeItem } from '../types';
 
 export const INITIAL_PROFILE: CoupleProfile = {
-  coupleCode: 'LOVE-2026',
+  coupleCode: '20240831',
   partner1Name: '태웅',
   partner2Name: '서주',
   anniversaryDate: '2025-05-20',
@@ -11,7 +11,7 @@ export const INITIAL_PROFILE: CoupleProfile = {
 export const INITIAL_BUCKETS: BucketItem[] = [
   {
     id: "b-1",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "일본어 배워서 여행가보기",
     category: "travel",
     status: "planned",
@@ -22,7 +22,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-2",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "클라이밍 🧗‍♀️",
     category: "sports",
     status: "planned",
@@ -32,7 +32,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-3",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "용산 크리스마스공원 🎄",
     category: "date",
     status: "planned",
@@ -42,7 +42,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-4",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "아모레퍼시픽 [신용산] 🎪",
     category: "date",
     status: "planned",
@@ -52,7 +52,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-5",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "경복궁 런 🏃‍♀️ &야장 🍺",
     category: "sports",
     status: "planned",
@@ -62,7 +62,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-6",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "올공 와인 🥂",
     category: "food",
     status: "planned",
@@ -72,7 +72,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-7",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "락페스티벌 룩 - 크록스 지비츠 🤘🎸",
     category: "culture",
     status: "completed",
@@ -82,7 +82,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-8",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "노을 버스투어 🚌",
     category: "date",
     status: "planned",
@@ -92,7 +92,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-9",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "고카트 레이싱 🏎️",
     category: "sports",
     status: "planned",
@@ -102,7 +102,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-10",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "일본가서 하트랜드 마시기 ❤️",
     category: "travel",
     status: "planned",
@@ -112,7 +112,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-11",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "도쿄오픈 도오전 🇯🇵",
     category: "travel",
     status: "planned",
@@ -122,7 +122,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-12",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "반차 쓰고 평냉 💨",
     category: "food",
     status: "planned",
@@ -132,7 +132,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-13",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "테니스 근교 도장깨기 🎾",
     category: "sports",
     status: "planned",
@@ -142,7 +142,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-14",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "디즈니랜드 가기 🎠",
     category: "travel",
     status: "planned",
@@ -152,7 +152,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-15",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "성수 태웅쓰 피자픽 🍕",
     category: "food",
     status: "completed",
@@ -162,7 +162,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-16",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "평냉 낮술 낮잠 zZZ",
     category: "food",
     status: "planned",
@@ -172,7 +172,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-17",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "런 🏃‍♀️ 뛰고 한강 수영장 🏊‍♂️",
     category: "sports",
     status: "planned",
@@ -182,7 +182,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-18",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "방이동 재래시장 겨울간식 🥶",
     category: "food",
     status: "planned",
@@ -192,7 +192,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-19",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "모어댄레귤러 캐롤 들으러 가기 🎅",
     category: "culture",
     status: "planned",
@@ -202,7 +202,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-20",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "등산가기 🥾 한라산 해돋이! 1/1",
     category: "travel",
     status: "planned",
@@ -212,7 +212,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-21",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "봄 인왕산 등산 흑백요리사 시즌 2 ⛰️",
     category: "sports",
     status: "planned",
@@ -222,7 +222,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-22",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "가을 지리산 산장코스 ⛰️",
     category: "travel",
     status: "planned",
@@ -232,7 +232,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-23",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "기념일 하이디라오 수타면 🍜",
     category: "food",
     status: "planned",
@@ -242,7 +242,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-24",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "하정우 와인 🍷",
     category: "food",
     status: "planned",
@@ -252,7 +252,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-25",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "제주도 방어 여행 🏝️ ( ❗️ 소주잔 지참 ❗️ )",
     category: "travel",
     status: "planned",
@@ -262,7 +262,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-26",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "플스 F1체험 🏎️",
     category: "culture",
     status: "planned",
@@ -272,7 +272,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-27",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "어둠속의 대화 🌚",
     category: "culture",
     status: "planned",
@@ -282,7 +282,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-28",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "고베규 먹기 🍖🥢",
     category: "food",
     status: "planned",
@@ -292,7 +292,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-29",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "대전 당일 빵지순례 🍞",
     category: "travel",
     status: "planned",
@@ -302,7 +302,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-30",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "서울 크로와상 맛집 도장깨기 🥐",
     category: "food",
     status: "planned",
@@ -312,7 +312,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-31",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "펜싱 가보기 🤺",
     category: "sports",
     status: "planned",
@@ -322,7 +322,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-32",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "지란지교+기름기뺀 고기 페어링 😆",
     category: "food",
     status: "planned",
@@ -332,7 +332,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-33",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "나이트사파리 +웅 라이온킹 브금 🐅",
     category: "travel",
     status: "planned",
@@ -342,7 +342,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-34",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "돈키호테 ❤️선물하고 입기",
     category: "travel",
     status: "planned",
@@ -352,7 +352,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-35",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "뮤직 페스티벌 가서 와인 마시기 🍷🎉",
     category: "culture",
     status: "planned",
@@ -362,7 +362,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-36",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "스페인 리캡 (갔던곳 핀해서 그려보기)",
     category: "travel",
     status: "completed",
@@ -372,7 +372,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-37",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "스페인 리캡 샹그리아 만들기 🍊🍷",
     category: "food",
     status: "completed",
@@ -382,7 +382,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-38",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "오키나와 🐳🐬",
     category: "travel",
     status: "planned",
@@ -392,7 +392,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-39",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "데이트 콘텐츠 인스타 계정 키우기",
     category: "goal",
     status: "planned",
@@ -402,7 +402,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-40",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "오징어 -> 수상한 꼬치 -> 석촌호수 코스 😆",
     category: "date",
     status: "planned",
@@ -412,7 +412,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-41",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "서울숲 힐링 (맥주 와인 보드게임 잠) 🍺",
     category: "date",
     status: "planned",
@@ -422,7 +422,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-42",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "테니스 전지훈련 캠핑 🎾⛺️",
     category: "sports",
     status: "planned",
@@ -432,7 +432,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-43",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "돼지불고기, 전복버터볶음밥 만들기 📖",
     category: "food",
     status: "planned",
@@ -442,7 +442,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-44",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "야간매점 🌌술과 어울리는 안주만들어 파티",
     category: "food",
     status: "planned",
@@ -452,7 +452,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-45",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "콜플 해외콘서트 가기 👽",
     category: "culture",
     status: "planned",
@@ -462,7 +462,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-46",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "이집트 피라미드 보기 🇪🇬",
     category: "travel",
     status: "planned",
@@ -472,7 +472,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-47",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "미국 서부 트립 🇺🇸🚌",
     category: "travel",
     status: "planned",
@@ -482,7 +482,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-48",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "소바칸 다른 계절에 한번 더 오기 🏠",
     category: "food",
     status: "planned",
@@ -492,7 +492,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-49",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "윔블던 스트로베리크림 먹으면서 관람 🍓🎾",
     category: "sports",
     status: "planned",
@@ -502,7 +502,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-50",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "겨울 삿포로 ❄️",
     category: "travel",
     status: "planned",
@@ -512,7 +512,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-51",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "여행통장 만들기 💵",
     category: "goal",
     status: "completed",
@@ -522,7 +522,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-52",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "출사 📸",
     category: "culture",
     status: "completed",
@@ -532,7 +532,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-53",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "캠핑 소고기버거&버번하이볼",
     category: "food",
     status: "completed",
@@ -542,7 +542,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-54",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "제미나이 초상화 그려주기 🎨",
     category: "date",
     status: "completed",
@@ -552,7 +552,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-55",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "눈썰매 ☃️🛷",
     category: "sports",
     status: "completed",
@@ -562,7 +562,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-56",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "기념일 만들어서 애일가기 🍷",
     category: "date",
     status: "completed",
@@ -572,7 +572,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-57",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "신동엽 위스키 🥃",
     category: "food",
     status: "completed",
@@ -582,7 +582,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-58",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "방어 안키모 소금 김밥 러시아안잭",
     category: "food",
     status: "completed",
@@ -592,7 +592,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-59",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "P의 여행 떠나기",
     category: "travel",
     status: "completed",
@@ -602,7 +602,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-60",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "마라톤 🏃‍♀️🏃‍♂️ MBN 마라톤",
     category: "sports",
     status: "completed",
@@ -612,7 +612,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-61",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "초코소라빵 🍫먼저 찾는 사람이 밀로밀 사기",
     category: "date",
     status: "completed",
@@ -622,7 +622,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-62",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "위스키 아이스크림 먹기 🍨",
     category: "food",
     status: "completed",
@@ -632,7 +632,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-63",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "학위복 커플사진 ❤️",
     category: "date",
     status: "completed",
@@ -642,7 +642,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-64",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "동물원 구경 🦒",
     category: "date",
     status: "completed",
@@ -652,7 +652,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-65",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "경마공원 🐎",
     category: "date",
     status: "completed",
@@ -662,7 +662,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-66",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "스페인포르투 서주 졸업여행(12or1) 🇪🇸🇵🇹",
     category: "travel",
     status: "completed",
@@ -672,7 +672,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-67",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "우드 공방 🪵 (서주 빵시리즈 2탄)",
     category: "culture",
     status: "completed",
@@ -682,7 +682,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-68",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "후토마끼랑 맥주 마시면서 피크닉 ✨",
     category: "food",
     status: "completed",
@@ -692,7 +692,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-69",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "고창 꽃구경 🌼 관식 애순이 룩",
     category: "travel",
     status: "completed",
@@ -702,7 +702,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-70",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "신당 겨울 시장 ❄️",
     category: "date",
     status: "completed",
@@ -712,7 +712,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-71",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "필카컬러헌팅 📸",
     category: "culture",
     status: "completed",
@@ -722,7 +722,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-72",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "여행 기록용 음악 플리 만들기",
     category: "culture",
     status: "completed",
@@ -732,7 +732,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-73",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "디톡스 위크! 🧄",
     category: "goal",
     status: "completed",
@@ -742,7 +742,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-74",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "추성훈 마초스테이크 먹기 🤤",
     category: "food",
     status: "completed",
@@ -752,7 +752,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-75",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "12월 회고록+ 랜덤 날짜정해서 일기 훔쳐보기 👀",
     category: "date",
     status: "completed",
@@ -762,7 +762,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-76",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "남대문 구우경 👀",
     category: "date",
     status: "completed",
@@ -772,7 +772,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-77",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "즉흥 일본 먹방 여행 🧳",
     category: "travel",
     status: "completed",
@@ -782,7 +782,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-78",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "한강 수영장 🏊‍♂️",
     category: "sports",
     status: "completed",
@@ -792,7 +792,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-79",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "서울 코미디 클럽 🤣",
     category: "culture",
     status: "completed",
@@ -802,7 +802,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-80",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "200일 기념 크록스 🙌",
     category: "date",
     status: "completed",
@@ -812,7 +812,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-81",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "아쿠아리움 구경 🐧",
     category: "date",
     status: "completed",
@@ -822,7 +822,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-82",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "청계천 야외 도서관 📖",
     category: "date",
     status: "completed",
@@ -832,7 +832,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-83",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "계곡 레츠꼬 📹 화채 🍉 촌캉스 🌾",
     category: "travel",
     status: "completed",
@@ -842,7 +842,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-84",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "에스프레소바 ☕️",
     category: "food",
     status: "completed",
@@ -852,7 +852,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-85",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "글램핑 🏕️ (게임 만들기ㅎ)",
     category: "travel",
     status: "completed",
@@ -862,7 +862,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-86",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "테니스 🎾 +치맥 🍗🍺",
     category: "sports",
     status: "completed",
@@ -872,7 +872,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-87",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "나이트 벚꽃 빵빵런 🌸",
     category: "sports",
     status: "completed",
@@ -882,7 +882,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-88",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "2차 맵찔이 대결 🔥🐔",
     category: "food",
     status: "completed",
@@ -892,7 +892,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-89",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "공통 노션 만들기! 경제 공부 등 용도 🧐",
     category: "goal",
     status: "completed",
@@ -902,7 +902,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-90",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "창경궁 야간개장 ✨",
     category: "date",
     status: "completed",
@@ -912,7 +912,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-91",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "쩜핑배틀 🤸‍♂️🤸‍♀️",
     category: "sports",
     status: "completed",
@@ -922,7 +922,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-92",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "도자기 공방 🏺",
     category: "culture",
     status: "completed",
@@ -932,7 +932,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-93",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "더현대 두바이찰떡, 쇼핑 🛍️",
     category: "date",
     status: "completed",
@@ -942,7 +942,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-94",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "호암미술관 전시회 니콜라스 파티 🖼️",
     category: "culture",
     status: "completed",
@@ -952,7 +952,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-95",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "책 공유(?) 📚",
     category: "goal",
     status: "completed",
@@ -962,7 +962,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-96",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "타이슨 코스 가기",
     category: "food",
     status: "completed",
@@ -972,7 +972,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-97",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "사당 볼머신 쳐보기 🎾",
     category: "sports",
     status: "completed",
@@ -982,7 +982,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-98",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "나고야 겨울 여행가기 😆😆😆(매우 기대중)",
     category: "travel",
     status: "completed",
@@ -992,7 +992,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-99",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "겨울 반포뎅 🍡",
     category: "food",
     status: "completed",
@@ -1002,7 +1002,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-100",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "만화카페 주술회전 정주행 🎥",
     category: "culture",
     status: "completed",
@@ -1012,7 +1012,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-101",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "클쓰마쓰 런 🎅🎄 +샌드치!?",
     category: "sports",
     status: "completed",
@@ -1022,7 +1022,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-102",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "방어와 화이트와인 먹기 🐟🍷",
     category: "food",
     status: "completed",
@@ -1032,7 +1032,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-103",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "잠실 크리스마스마켓 🎄 +아웃백 🥩",
     category: "date",
     status: "completed",
@@ -1042,7 +1042,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-104",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "테니스 레슨 🎾",
     category: "sports",
     status: "completed",
@@ -1052,7 +1052,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-105",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "찜질방 ♨️",
     category: "date",
     status: "completed",
@@ -1062,7 +1062,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-106",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "호러메이즈 👻🥲",
     category: "sports",
     status: "completed",
@@ -1072,7 +1072,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-107",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "이우환 로스코 전시회[한강진] 🖼️🥲",
     category: "culture",
     status: "completed",
@@ -1082,7 +1082,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-108",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "단풍구경 🍂🍁 보러가기 🍂",
     category: "date",
     status: "completed",
@@ -1092,7 +1092,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-109",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "러닝 🏃‍♀️🏃‍♂️",
     category: "sports",
     status: "completed",
@@ -1102,7 +1102,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-110",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "올림픽 공원 꽃구경 🌼",
     category: "date",
     status: "completed",
@@ -1112,7 +1112,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-111",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "따릉이 한강+도시락 싸기 🚴‍♂️🚴‍♀️",
     category: "date",
     status: "completed",
@@ -1122,7 +1122,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-112",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "재즈바 뚜둔 🎷",
     category: "culture",
     status: "completed",
@@ -1132,7 +1132,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
   },
   {
     id: "b-113",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "경복궁 야간개장 🏯",
     category: "date",
     status: "completed",
@@ -1145,7 +1145,7 @@ export const INITIAL_BUCKETS: BucketItem[] = [
 export const INITIAL_MEMOS: MemoItem[] = [
   {
     id: "m-1",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "🎄 25년 크리스마스 물음표 박스 ❓",
     content: "✅ 캘린더 만들기\n✅ 12월 주차별 다꾸",
     category: "event",
@@ -1157,7 +1157,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
   },
   {
     id: "m-2",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "🌾 촌캉스 준비물",
     content: "✅ 일기장\n✅ 수박\n✅ 시장에서 잠옷사기",
     category: "travel",
@@ -1169,7 +1169,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
   },
   {
     id: "m-3",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "🗓️ 6월 버킷",
     content: "- 서주: 책 내용 중 말하고 싶은 부분 정리해서 말하기\n- 태웅: 퍼스널 브랜딩 관련? 뭐라도 시도해보기",
     category: "idea",
@@ -1181,7 +1181,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
   },
   {
     id: "m-4",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "📚 Book study",
     content: "- 브랜드 관해서 각자 분야에 맞는 책 읽고 얘기\n- 독립서점에서 끌리고 읽기\n- 서로 다른 매거진 b 읽고 토킹\n- 새로운 직업 책\n- 고전 벽돌책 도장깨기 (코스모스, 총균쇠)",
     category: "idea",
@@ -1193,7 +1193,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
   },
   {
     id: "m-5",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "📜 유언장 아이디어",
     content: "- 10년 주기로 일대기 잡지 편집 (장태웅 팝업 스토어/ 유골굿즈)\n- 내 영정 사진 직접 그리기",
     category: "idea",
@@ -1205,7 +1205,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
   },
   {
     id: "m-6",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "🇯🇵 나고야 버킷리스트",
     content: "✅ 히츠마부시\n✅ 야바톤 (미소철판돈까스)\n✅ 오뎅\n✅ 커피 맛집\n✅ 심야 라멘 🍜\n✅ 테바사키\n✅ 새해 다이어리 사기",
     category: "travel",
@@ -1217,7 +1217,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
   },
   {
     id: "m-7",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "🇪🇸 스페인 버킷 리스트",
     content: "✅ 심야식당 펍이나 바 가보기\n✅ 이른 아침 동네 산책\n✅ 저녁에 마트 장봐서 먹기\n✅ 시장구경+납작복숭아 🍑&디저트 와인\n✅ 맥주\n✅ 포트와인+와이너리\n✅ 한국 포트 스페인 포트 와인 비교!! - 루비 20년이상부터가 찐 👍\n✅ 이베리코, 깔솟",
     category: "travel",
@@ -1232,7 +1232,7 @@ export const INITIAL_MEMOS: MemoItem[] = [
 export const INITIAL_CHALLENGES: ChallengeItem[] = [
   {
     id: "c-1",
-    coupleCode: "LOVE-2026",
+    coupleCode: "20240831",
     title: "음주 챌린지 🍺",
     description: "1달에 삘데이 1번 + 간술데이 2번 (둘이 소주 1병 or 인당 맥주 1잔)",
     upgradeRule: "업그레이드: 러닝 최소 3km이상 (둘이 소주 반병 or 맥주 1잔 업그레이드 가능)",
@@ -1269,7 +1269,7 @@ export const INITIAL_CHALLENGES: ChallengeItem[] = [
 ];
 
 export function getDefaultCoupleData(code: string) {
-  const normalizedCode = code || 'LOVE-2026';
+  const normalizedCode = code || '20240831';
   return {
     profile: {
       ...INITIAL_PROFILE,
