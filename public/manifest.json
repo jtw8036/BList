@@ -15,7 +15,7 @@
       "purpose": "any maskable"
     },
     {
-      "src": "apple-touch-icon-ios.png",
+      "src": "apple-icon-v5.png",
       "type": "image/png",
       "sizes": "180x180"
     }
