@@ -236,15 +236,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             />
           </div>
 
-          <div>
-            <label className="block font-bold text-slate-800 mb-1">
+          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
+            <label className="block font-bold text-slate-800 mb-1.5">
               처음 만난 날 / 기념일 *
             </label>
             <input
               type="date"
               value={anniversaryDate}
               onChange={(e) => setAnniversaryDate(e.target.value)}
-              className="appearance-none block w-full min-w-0 px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800"
+              className="appearance-none block w-full min-w-0 max-w-full px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800 box-border"
               required
             />
           </div>
