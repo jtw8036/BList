@@ -3,30 +3,30 @@
   "name": "T♡S",
   "icons": [
     {
-      "src": "icon-192-v5.png",
+      "src": "icon-192-v6.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "icon-512-v5.png",
+      "src": "icon-512-v6.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     },
     {
-      "src": "apple-touch-icon-v5.png",
+      "src": "apple-touch-icon-v6.png",
       "type": "image/png",
       "sizes": "180x180"
     },
     {
-      "src": "icon-v5.svg",
+      "src": "icon-v6.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any maskable"
     },
     {
-      "src": "favicon-v5.svg",
+      "src": "favicon-v6.svg",
       "type": "image/svg+xml",
       "sizes": "any"
     }
