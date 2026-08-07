@@ -277,7 +277,7 @@ export const BucketList: React.FC<BucketListProps> = ({
                   activeRingColor="ring-[#FF2E93]"
                   onItemClick={() => setSelectedDetailItem(item)}
                 >
-                  {(isDragging) => (
+                  {(isDragging, dragControls) => (
                     <div
                       className={`group bg-white rounded-2xl px-3.5 py-3 border transition-all duration-150 flex items-center justify-between gap-2.5 cursor-pointer hover:border-slate-400 hover:shadow-xs ${
                         isCompleted
@@ -286,7 +286,13 @@ export const BucketList: React.FC<BucketListProps> = ({
                       } ${isDragging ? 'border-pink-300 shadow-xl scale-[1.01]' : ''}`}
                     >
                       {/* Drag Grip Icon */}
-                      <div className="text-slate-300 group-hover:text-slate-500 shrink-0 cursor-grab active:cursor-grabbing p-0.5">
+                      <div 
+                        className="text-slate-300 group-hover:text-slate-500 shrink-0 cursor-grab active:cursor-grabbing p-1 touch-none"
+                        onPointerDown={(e) => {
+                          e.stopPropagation();
+                          dragControls.start(e);
+                        }}
+                      >
                         <GripVertical className="w-4 h-4" />
                       </div>
 

@@ -265,7 +265,7 @@ export const MemoList: React.FC<MemoListProps> = ({
                   item={memo}
                   activeRingColor="ring-[#EC4899]"
                 >
-                  {(isDragging) => (
+                  {(isDragging, dragControls) => (
                     <div
                       onClick={() => handleOpenEdit(memo)}
                       className={`relative rounded-2xl p-4 border transition-all duration-150 flex flex-col justify-between h-full cursor-pointer ${colors.bg} ${colors.border} shadow-2xs hover:shadow-xs ${
@@ -276,7 +276,13 @@ export const MemoList: React.FC<MemoListProps> = ({
                         {/* Top Bar: Title, Grip & Pin */}
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                            <div className="text-slate-400 shrink-0 cursor-grab active:cursor-grabbing">
+                            <div 
+                              className="text-slate-400 shrink-0 cursor-grab active:cursor-grabbing touch-none p-1"
+                              onPointerDown={(e) => {
+                                e.stopPropagation();
+                                dragControls.start(e);
+                              }}
+                            >
                               <GripVertical className="w-4 h-4" />
                             </div>
                             <h3 className={`font-bold text-sm ${colors.text} leading-snug truncate`}>

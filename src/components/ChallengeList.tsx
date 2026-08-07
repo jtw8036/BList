@@ -359,7 +359,7 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
                   item={item}
                   activeRingColor="ring-[#9333EA]"
                 >
-                  {(isDragging) => (
+                  {(isDragging, dragControls) => (
                     <div
                       className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden shadow-2xs ${
                         isCompleted ? 'border-emerald-200/80 bg-emerald-50/10' : 'border-slate-200/80'
@@ -369,7 +369,13 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
                       <div className="p-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-slate-50/70">
                         <div className="space-y-1">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <div className="text-slate-400 shrink-0 cursor-grab active:cursor-grabbing p-0.5">
+                            <div 
+                              className="text-slate-400 shrink-0 cursor-grab active:cursor-grabbing p-1 touch-none"
+                              onPointerDown={(e) => {
+                                e.stopPropagation();
+                                dragControls.start(e);
+                              }}
+                            >
                               <GripVertical className="w-4 h-4" />
                             </div>
                             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-200/60 text-slate-800 border border-slate-300/50">
