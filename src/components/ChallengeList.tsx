@@ -20,6 +20,7 @@ import { TrashModal } from './TrashModal';
 
 interface ChallengeListProps {
   challenges: ChallengeItem[];
+  currentUser: 'partner1' | 'partner2';
   partner1Name: string;
   partner2Name: string;
   trashItems?: ChallengeItem[];
@@ -34,6 +35,7 @@ interface ChallengeListProps {
 
 export const ChallengeList: React.FC<ChallengeListProps> = ({
   challenges,
+  currentUser,
   partner1Name,
   partner2Name,
   trashItems = [],
@@ -132,7 +134,7 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
         periodType,
         challengeType,
         category,
-        createdBy: partner1Name || '나',
+        createdBy: (currentUser === 'partner1' ? partner1Name : partner2Name) || '작성자',
         status: 'active',
         subGoals: formattedSubGoals,
         bonusLogs: [],
@@ -192,7 +194,7 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
       id: `bl_${Date.now()}`,
       date: new Date().toISOString().split('T')[0],
       note: bonusNote.trim(),
-      createdBy: partner1Name || '나',
+      createdBy: (currentUser === 'partner1' ? partner1Name : partner2Name) || '작성자',
     };
 
     const updatedBonusLogs = [newLog, ...(challenge.bonusLogs || [])];
@@ -404,6 +406,15 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
                           <h3 className="text-base font-bold text-slate-900 tracking-tight pt-0.5">
                             {item.title}
                           </h3>
+                          <div className="flex items-center mt-1">
+                            <span className="text-[10px] text-slate-400">
+                              {new Date(item.updatedAt || item.createdAt || Date.now()).toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                              })}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Actions */}
@@ -574,7 +585,10 @@ export const ChallengeList: React.FC<ChallengeListProps> = ({
                           >
                             <div className="space-y-0.5 min-w-0 flex-1">
                               <p className="font-semibold text-slate-800 truncate">{log.note}</p>
-                              <span className="text-[10px] text-slate-400 block">{log.date}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] text-slate-400 block">{log.date}</span>
+                                <span className="text-[10px] font-medium text-slate-500 bg-slate-200/50 px-1.5 rounded-md">{log.createdBy}</span>
+                              </div>
                             </div>
                             <button
                               onClick={() => handleDeleteBonusLog(item, log.id)}

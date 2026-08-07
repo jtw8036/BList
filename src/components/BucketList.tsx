@@ -310,7 +310,7 @@ export const BucketList: React.FC<BucketListProps> = ({
                       </button>
 
                       {/* Title */}
-                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
                         <span
                           className={`font-bold text-slate-900 text-xs sm:text-sm truncate ${
                             isCompleted ? 'line-through text-slate-400 font-medium' : ''
@@ -318,6 +318,15 @@ export const BucketList: React.FC<BucketListProps> = ({
                         >
                           {item.title}
                         </span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="text-[9px] text-slate-400 font-medium">
+                            {new Date(item.updatedAt || item.createdAt || Date.now()).toLocaleDateString('ko-KR', {
+                              year: '2-digit',
+                              month: '2-digit',
+                              day: '2-digit',
+                            })}
+                          </span>
+                        </div>
                       </div>
 
                       {/* Arrow */}

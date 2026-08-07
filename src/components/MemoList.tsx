@@ -16,6 +16,7 @@ import { TrashModal } from './TrashModal';
 
 interface MemoListProps {
   items: MemoItem[];
+  currentUser: 'partner1' | 'partner2';
   partner1Name: string;
   partner2Name: string;
   trashItems?: MemoItem[];
@@ -67,6 +68,7 @@ const COLOR_MAP: Record<
 
 export const MemoList: React.FC<MemoListProps> = ({
   items,
+  currentUser,
   partner1Name,
   partner2Name,
   trashItems = [],
@@ -88,7 +90,7 @@ export const MemoList: React.FC<MemoListProps> = ({
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [colorTag, setColorTag] = useState<'slate' | 'amber' | 'emerald' | 'sky' | 'purple'>('amber');
-  const [createdBy, setCreatedBy] = useState(partner1Name);
+  const [createdBy, setCreatedBy] = useState(currentUser === 'partner1' ? partner1Name : partner2Name);
   const [isPinned, setIsPinned] = useState(false);
 
   // Filter & Sort
@@ -114,7 +116,7 @@ export const MemoList: React.FC<MemoListProps> = ({
     setTitle('');
     setContent('');
     setColorTag('amber');
-    setCreatedBy(partner1Name || '작성자');
+    setCreatedBy((currentUser === 'partner1' ? partner1Name : partner2Name) || '작성자');
     setIsPinned(false);
     setIsModalOpen(true);
   };
@@ -315,7 +317,16 @@ export const MemoList: React.FC<MemoListProps> = ({
 
                       {/* Footer */}
                       <div className="pt-2 border-t border-black/5 flex items-center justify-between text-[10px] text-slate-500 mt-2">
-                        <span className="font-medium text-slate-600">{memo.createdBy} 작성</span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium text-slate-600">{memo.createdBy} 작성</span>
+                          <span className="text-slate-400">
+                            {new Date(memo.updatedAt || memo.createdAt || Date.now()).toLocaleDateString('ko-KR', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                            })}
+                          </span>
+                        </div>
 
                         <div className="flex items-center gap-1">
                           <button
@@ -381,7 +392,7 @@ export const MemoList: React.FC<MemoListProps> = ({
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800"
                 >
                   <option value={partner1Name || '나'}>{partner1Name || '나'}</option>
-                  {partner2Name && <option value={partner2Name}>{partner2Name}</option>}
+                  <option value={partner2Name || '상대방'}>{partner2Name || '상대방'}</option>
                 </select>
               </div>
 

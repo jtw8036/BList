@@ -15,17 +15,22 @@ import { CoupleProfile } from '../types';
 
 interface ProfileViewProps {
   profile: CoupleProfile;
+  currentUser: 'partner1' | 'partner2';
+  onSetCurrentUser: (user: 'partner1' | 'partner2') => void;
   onUpdateProfile: (updated: Partial<CoupleProfile>) => void;
   onSwitchCode: (newCode: string) => void;
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({
   profile,
+  currentUser,
+  onSetCurrentUser,
   onUpdateProfile,
   onSwitchCode,
 }) => {
-  const [partner1Name, setPartner1Name] = useState(profile.partner1Name);
-  const [anniversaryDate, setAnniversaryDate] = useState(profile.anniversaryDate);
+  const [partner1Name, setPartner1Name] = useState(profile.partner1Name || '');
+  const [partner2Name, setPartner2Name] = useState(profile.partner2Name || '');
+  const [anniversaryDate, setAnniversaryDate] = useState(profile.anniversaryDate || '');
   const [copied, setCopied] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [inputCode, setInputCode] = useState('');
@@ -62,6 +67,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     e.preventDefault();
     onUpdateProfile({
       partner1Name: partner1Name.trim(),
+      partner2Name: partner2Name.trim(),
       anniversaryDate,
     });
     setSavedSuccess(true);
@@ -246,18 +252,34 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
 
         <form onSubmit={handleSaveProfile} className="space-y-3.5 text-xs">
-          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">
-            <label className="block font-bold text-slate-800 mb-1.5">
-              내 이름
+          <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 mb-3.5">
+            <label className="block font-bold text-slate-800 mb-2">
+              나는 누구인가요? (현재 사용자)
             </label>
-            <input
-              type="text"
-              value={partner1Name}
-              onChange={(e) => setPartner1Name(e.target.value)}
-              placeholder="내 이름 입력"
-              className="w-full px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800"
-              required
-            />
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => onSetCurrentUser('partner1')}
+                className={`flex-1 py-2.5 rounded-xl font-bold transition-all ${
+                  currentUser === 'partner1'
+                    ? 'bg-blue-500 text-white shadow-md'
+                    : 'bg-white text-slate-600 border border-slate-200'
+                }`}
+              >
+                {partner1Name || '파트너 1'}
+              </button>
+              <button
+                type="button"
+                onClick={() => onSetCurrentUser('partner2')}
+                className={`flex-1 py-2.5 rounded-xl font-bold transition-all ${
+                  currentUser === 'partner2'
+                    ? 'bg-pink-500 text-white shadow-md'
+                    : 'bg-white text-slate-600 border border-slate-200'
+                }`}
+              >
+                {partner2Name || '파트너 2'}
+              </button>
+            </div>
           </div>
 
           <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80">

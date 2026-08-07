@@ -35,6 +35,14 @@ export default function App() {
     return code;
   });
 
+  const [currentUser, setCurrentUser] = useState<'partner1' | 'partner2'>(() => {
+    return (localStorage.getItem('current_user') as 'partner1' | 'partner2') || 'partner1';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('current_user', currentUser);
+  }, [currentUser]);
+
   const [activeTab, setActiveTab] = useState<NavTab>('bucket');
   const [profile, setProfile] = useState<CoupleProfile>(() => getDefaultCoupleData('20240831').profile);
   const [buckets, setBuckets] = useState<BucketItem[]>(() => getDefaultCoupleData('20240831').buckets);
@@ -146,6 +154,8 @@ export default function App() {
 
   // Challenge CRUD
   const handleAddChallenge = async (item: Partial<ChallengeItem>) => {
+    const authorName = currentUser === 'partner1' ? profile.partner1Name : profile.partner2Name;
+
     const newItem: ChallengeItem = {
       id: `c_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       coupleCode: coupleCode,
@@ -156,8 +166,9 @@ export default function App() {
       status: item.status || 'active',
       subGoals: item.subGoals || [],
       bonusLogs: item.bonusLogs || [],
-      createdBy: item.createdBy || '태웅',
+      createdBy: item.createdBy || authorName || '작성자',
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
 
@@ -170,11 +181,10 @@ export default function App() {
 
   const handleUpdateChallenge = async (id: string, updated: Partial<ChallengeItem>) => {
     setChallenges((prev) => {
-      const next = prev.map((c) => (c.id === id ? { ...c, ...updated } : c));
+      const next = prev.map((c) => (c.id === id ? { ...c, ...updated, updatedAt: new Date().toISOString() } : c));
       syncToLocal(coupleCode, { challenges: next });
       return next;
     });
-
   };
 
   const handleDeleteChallenge = async (id: string) => {
@@ -197,6 +207,8 @@ export default function App() {
 
   // Bucket CRUD
   const handleAddBucket = async (item: Partial<BucketItem>) => {
+    const authorName = currentUser === 'partner1' ? profile.partner1Name : profile.partner2Name;
+
     const newItem: BucketItem = {
       id: `b_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       coupleCode: coupleCode,
@@ -206,13 +218,14 @@ export default function App() {
       targetDate: item.targetDate || '',
       completedDate: item.completedDate || '',
       completedBy: item.completedBy || '',
-      createdBy: item.createdBy || '나',
+      createdBy: item.createdBy || authorName || '작성자',
       location: item.location || '',
       note: item.note || '',
       photoUrl: item.photoUrl || '',
       tags: Array.isArray(item.tags) ? item.tags : [],
       likes: 0,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
 
@@ -225,11 +238,10 @@ export default function App() {
 
   const handleUpdateBucket = async (id: string, updated: Partial<BucketItem>) => {
     setBuckets((prev) => {
-      const next = prev.map((b) => (b.id === id ? { ...b, ...updated } : b));
+      const next = prev.map((b) => (b.id === id ? { ...b, ...updated, updatedAt: new Date().toISOString() } : b));
       syncToLocal(coupleCode, { buckets: next });
       return next;
     });
-
   };
 
   const handleDeleteBucket = async (id: string) => {
@@ -261,6 +273,8 @@ export default function App() {
 
   // Memo CRUD
   const handleAddMemo = async (item: Partial<MemoItem>) => {
+    const authorName = currentUser === 'partner1' ? profile.partner1Name : profile.partner2Name;
+
     const newItem: MemoItem = {
       id: `m_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       coupleCode: coupleCode,
@@ -269,7 +283,8 @@ export default function App() {
       category: item.category || 'memo',
       colorTag: item.colorTag || 'rose',
       isPinned: !!item.isPinned,
-      createdBy: item.createdBy || '나',
+      createdBy: item.createdBy || authorName || '작성자',
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
@@ -423,6 +438,7 @@ export default function App() {
             {activeTab === 'memo' && (
               <MemoList
                 items={memos}
+                currentUser={currentUser}
                 partner1Name={profile.partner1Name}
                 partner2Name={profile.partner2Name}
                 trashItems={trash.memos}
@@ -440,6 +456,7 @@ export default function App() {
             {activeTab === 'challenge' && (
               <ChallengeList
                 challenges={challenges}
+                currentUser={currentUser}
                 partner1Name={profile.partner1Name}
                 partner2Name={profile.partner2Name}
                 trashItems={trash.challenges}
@@ -456,6 +473,8 @@ export default function App() {
             {activeTab === 'profile' && (
               <ProfileView
                 profile={profile}
+                currentUser={currentUser}
+                onSetCurrentUser={setCurrentUser}
                 onUpdateProfile={handleUpdateProfile}
                 onSwitchCode={handleSwitchCode}
               />

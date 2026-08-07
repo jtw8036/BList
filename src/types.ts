@@ -17,6 +17,7 @@ export interface BucketItem {
   tags: string[];
   likes?: number;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export type MemoCategory = 'memo' | 'dday' | 'anniversary' | 'photo_log' | 'wishlist' | 'event' | 'travel' | 'idea';
@@ -48,6 +49,7 @@ export interface ChallengeItem {
   bonusLogs: ChallengeBonusLog[];
   createdBy: string;
   createdAt: string;
+  updatedAt?: string;
   category: 'drink' | 'exercise' | 'hobby' | 'saving' | 'habit';
   status: 'active' | 'completed' | 'paused';
 }
