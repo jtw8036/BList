@@ -244,7 +244,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               type="date"
               value={anniversaryDate}
               onChange={(e) => setAnniversaryDate(e.target.value)}
-              className="block w-full max-w-full px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800"
+              className="appearance-none block w-full min-w-0 px-3.5 py-2.5 bg-white rounded-xl border border-slate-200 focus:outline-none focus:border-slate-800"
               required
             />
           </div>
