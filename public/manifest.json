@@ -3,24 +3,24 @@
   "name": "T♡S",
   "icons": [
     {
-      "src": "./pwa-icon-192.png",
+      "src": "https://jtw8036.github.io/BList/pwa-icon-192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "./pwa-icon-512.png",
+      "src": "https://jtw8036.github.io/BList/pwa-icon-512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
     },
     {
-      "src": "./ios-icon-180.png",
+      "src": "https://jtw8036.github.io/BList/apple-icon-180-v4.png",
       "type": "image/png",
       "sizes": "180x180"
     },
     {
-      "src": "./icon.svg",
+      "src": "https://jtw8036.github.io/BList/icon.svg",
       "type": "image/svg+xml",
       "sizes": "any",
       "purpose": "any maskable"
