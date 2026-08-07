@@ -5,30 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>T♡S</title>
     
-    <!-- PWA / Apple Web App meta tags for native app feel -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="T♡S" />
     <meta name="theme-color" content="#fff5f7" />
     
-    
-    
-    <!-- Use brand new filename for iOS to bust aggressive cache -->
-    
-    
-    
-    
-    
+    <link rel="manifest" href="/manifest.json" />
+    <!-- Explicit absolute URL just in case, but let Vite rewrite it normally -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon-ios.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-ios.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-ios.png" />
+    <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-ios.png" />
 
-    
-    <link rel="manifest" href="https://jtw8036.github.io/BList/manifest.json?v=4" />
-    <link rel="apple-touch-icon" sizes="180x180" href="https://jtw8036.github.io/BList/apple-icon-180-v4.png" />
-    <link rel="icon" type="image/svg+xml" href="https://jtw8036.github.io/BList/icon.svg" />
-    <link rel="icon" type="image/png" sizes="192x192" href="https://jtw8036.github.io/BList/pwa-icon-192.png" />
-    <link rel="shortcut icon" href="https://jtw8036.github.io/BList/icon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/pwa-icon-192.png" />
+    <link rel="shortcut icon" href="/icon.svg" />
 
-    <!-- Fonts: Preconnect & Load Pretendard/Inter for clean designer look -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   </head>
